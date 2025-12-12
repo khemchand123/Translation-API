@@ -98,7 +98,7 @@ class TranslationService:
             result_data (dict): Raw result data from SarvamAI
             
         Returns:
-            dict: Formatted response with status, language, transcript, and speakers
+            dict: Formatted response with status, language, and speakers
         """
         speakers = []
         
@@ -106,15 +106,12 @@ class TranslationService:
             for entry in result_data['diarized_transcript']['entries']:
                 speakers.append({
                     'speaker_id': entry.get('speaker_id', 'Unknown'),
-                    'text': entry.get('transcript', ''),
-                    'start_time': entry.get('start_time_seconds', 0),
-                    'end_time': entry.get('end_time_seconds', 0)
+                    'text': entry.get('transcript', '')
                 })
         
         return {
             'status': 'success',
             'language_code': result_data.get('language_code', 'N/A'),
-            'full_transcript': result_data.get('transcript', ''),
             'speakers': speakers
         }
     

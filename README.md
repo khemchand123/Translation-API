@@ -6,7 +6,6 @@ A Flask REST API wrapper for audio translation with speaker diarization using Sa
 
 - 🎤 **Audio Translation**: Transcribe and translate audio files from URLs
 - 👥 **Speaker Diarization**: Separate and identify different speakers
-- ⏱️ **Timestamps**: Precise timing for each speaker segment
 - 🌐 **Language Detection**: Automatic language identification
 - 🐳 **Docker Ready**: Easy deployment with Docker
 - 🔍 **Health Monitoring**: Built-in health check endpoint
@@ -29,19 +28,14 @@ Translate audio from URL with speaker diarization.
 {
   "status": "success",
   "language_code": "hi-IN",
-  "full_transcript": "Complete transcript text...",
   "speakers": [
     {
       "speaker_id": "speaker_1",
-      "text": "Hello",
-      "start_time": 0.5,
-      "end_time": 1.2
+      "text": "Hello"
     },
     {
       "speaker_id": "speaker_2",
-      "text": "Hi there",
-      "start_time": 1.5,
-      "end_time": 2.3
+      "text": "Hi there"
     }
   ]
 }
@@ -118,10 +112,9 @@ response = requests.post(
 
 result = response.json()
 print(f"Language: {result['language_code']}")
-print(f"Transcript: {result['full_transcript']}")
 
 for speaker in result['speakers']:
-    print(f"[{speaker['start_time']:.2f}s] {speaker['speaker_id']}: {speaker['text']}")
+    print(f"{speaker['speaker_id']}: {speaker['text']}")
 ```
 
 ## Docker Deployment
@@ -248,3 +241,22 @@ For issues or questions:
 - Check the API documentation at `http://localhost:8888/`
 - Review the health endpoint at `http://localhost:8888/health`
 - Check Docker logs: `docker logs audio-translation`
+
+
+
+#how to start the project
+1. 
+docker build -t audio-translation-api .
+2. 
+docker run -d -p 8888:8888 \
+  -e SARVAM_API_KEY=sk_s5zsx47h_vV1ePqgm4ZRa7g8QgEnGgvTF \
+  --name audio-translation \
+  audio-translation-api
+
+3. 
+curl -X POST http://localhost:8888/translate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "audio_url": "https://sr.knowlarity.com/vr/fetchsound/?callid=48bdfa3f-2d1b-4ef4-a686-369d4862f106"
+  }'
+
