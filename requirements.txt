@@ -1,0 +1,4 @@
+sarvamai
+requests
+flask
+gunicorn
