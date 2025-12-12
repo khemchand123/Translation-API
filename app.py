@@ -53,10 +53,10 @@ def main():
         print("\nAll files failed.")
         return
 
-    # Download outputs for successful files
-    output_dir = "./output"
+    # Download outputs to temporary directory
+    output_dir = tempfile.mkdtemp()
     job.download_outputs(output_dir=output_dir)
-    print(f"\nDownloaded {len(file_results['successful'])} file(s) to: {output_dir}")
+    print(f"\nDownloaded {len(file_results['successful'])} file(s) to temporary directory")
     
     # Print translation results
     print("\n" + "="*80)
@@ -95,12 +95,21 @@ def main():
     
     print("\n" + "="*80)
     
-    # Cleanup temporary file
+    # Cleanup temporary directory and files
+    try:
+        for file in os.listdir(output_dir):
+            os.unlink(os.path.join(output_dir, file))
+        os.rmdir(output_dir)
+        print(f"\n🧹 Cleaned up temporary files")
+    except Exception as e:
+        print(f"\n⚠️  Warning: Could not delete temporary directory: {e}")
+    
+    # Cleanup temporary audio file
     try:
         os.unlink(temp_audio.name)
-        print(f"\n🧹 Cleaned up temporary file: {temp_audio.name}")
+        print(f"🧹 Cleaned up temporary audio file: {temp_audio.name}")
     except Exception as e:
-        print(f"\n⚠️  Warning: Could not delete temporary file {temp_audio.name}: {e}")
+        print(f"⚠️  Warning: Could not delete temporary file {temp_audio.name}: {e}")
 
 if __name__ == "__main__":
     main()
