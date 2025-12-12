@@ -145,3 +145,37 @@ class TranslationService:
                     os.unlink(temp_file)
                 except Exception:
                     pass  # Ignore cleanup errors
+    
+    def translate_from_file(self, audio_file):
+        """Complete translation workflow from uploaded file to formatted response.
+        
+        Args:
+            audio_file: Flask FileStorage object (uploaded file)
+            
+        Returns:
+            dict: Formatted translation response
+            
+        Raises:
+            Exception: If any step fails
+        """
+        temp_file = None
+        try:
+            # Save uploaded file to temporary location
+            temp_audio = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
+            audio_file.save(temp_audio.name)
+            temp_audio.close()
+            temp_file = temp_audio.name
+            
+            # Process audio
+            result_data = self.process_audio(temp_file)
+            
+            # Format response
+            return self.format_response(result_data)
+        
+        finally:
+            # Cleanup temporary file
+            if temp_file and os.path.exists(temp_file):
+                try:
+                    os.unlink(temp_file)
+                except Exception:
+                    pass  # Ignore cleanup errors

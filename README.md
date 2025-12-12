@@ -1,12 +1,15 @@
-# Audio Translation API
+# Audio Translation API v2.0
 
-A Flask REST API wrapper for audio translation with speaker diarization using SarvamAI. This service downloads audio from URLs, transcribes and translates the content, and returns speaker-wise transcripts with timestamps.
+A Flask REST API wrapper for audio translation with speaker diarization using SarvamAI. This service downloads audio from URLs or accepts file uploads, transcribes and translates the content to English, and returns speaker-wise transcripts.
 
 ## Features
 
-- 🎤 **Audio Translation**: Transcribe and translate audio files from URLs
+- 🎤 **Audio Translation**: Transcribe and translate audio files from URLs or uploads
 - 👥 **Speaker Diarization**: Separate and identify different speakers
-- 🌐 **Language Detection**: Automatic language identification
+- 🌐 **Language Detection**: Automatic language identification (supports Telugu, Hindi, Tamil, and more)
+- 🔄 **Auto Translation**: Automatically translates to English
+- 📦 **Metadata Support**: Pass custom metadata and get it back in the response
+- 📤 **File Upload**: Support both URL-based and direct file upload
 - 🐳 **Docker Ready**: Easy deployment with Docker
 - 🔍 **Health Monitoring**: Built-in health check endpoint
 
@@ -14,12 +17,21 @@ A Flask REST API wrapper for audio translation with speaker diarization using Sa
 
 ### `POST /translate`
 
-Translate audio from URL with speaker diarization.
+Translate audio from URL with speaker diarization and optional metadata.
 
 **Request:**
 ```json
 {
-  "audio_url": "https://example.com/audio.mp3"
+  "audio_url": "https://example.com/audio.mp3",
+  "seller_buyer_meta_data": {
+    "seller_identifier": "5901",
+    "buyer_identifier": "8801",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "mcat_name": "Commercial Kitchen Equipment",
+    "mcat_id": "5570",
+    "main_product": "Product Name"
+  }
 }
 ```
 
@@ -37,9 +49,35 @@ Translate audio from URL with speaker diarization.
       "speaker_id": "speaker_2",
       "text": "Hi there"
     }
-  ]
+  ],
+  "seller_buyer_meta_data": {
+    "seller_identifier": "5901",
+    "buyer_identifier": "8801",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "mcat_name": "Commercial Kitchen Equipment",
+    "mcat_id": "5570",
+    "main_product": "Product Name"
+  }
 }
 ```
+
+### `POST /translate-file`
+
+Upload and translate audio file with speaker diarization.
+
+**Request (multipart/form-data):**
+- `audio_file`: Audio file (mp3, wav, etc.)
+- `seller_buyer_meta_data`: JSON string with metadata (optional)
+
+**Example:**
+```bash
+curl -X POST http://localhost:8888/translate-file \
+  -F "audio_file=@audio.mp3" \
+  -F 'seller_buyer_meta_data={"seller_identifier":"5901","city":"Chennai"}'
+```
+
+**Response:** Same format as `/translate` endpoint
 
 ### `GET /health`
 
@@ -92,22 +130,42 @@ API documentation and information.
 
 ### Testing the API
 
-**Using cURL:**
+**Using cURL (with metadata):**
 ```bash
 curl -X POST http://localhost:8888/translate \
   -H "Content-Type: application/json" \
   -d '{
-    "audio_url": "https://sr.knowlarity.com/vr/fetchsound/?callid=48bdfa3f-2d1b-4ef4-a686-369d4862f106"
+    "audio_url": "https://sr.knowlarity.com/vr/fetchsound/?callid=48bdfa3f-2d1b-4ef4-a686-369d4862f106",
+    "seller_buyer_meta_data": {
+      "seller_identifier": "5901",
+      "buyer_identifier": "8801",
+      "city": "Chennai"
+    }
   }'
+```
+
+**Upload File:**
+```bash
+curl -X POST http://localhost:8888/translate-file \
+  -F "audio_file=@audio.mp3" \
+  -F 'seller_buyer_meta_data={"seller_identifier":"5901"}'
 ```
 
 **Using Python:**
 ```python
 import requests
 
+# URL-based translation with metadata
 response = requests.post(
     'http://localhost:8888/translate',
-    json={'audio_url': 'https://example.com/audio.mp3'}
+    json={
+        'audio_url': 'https://example.com/audio.mp3',
+        'seller_buyer_meta_data': {
+            'seller_identifier': '5901',
+            'buyer_identifier': '8801',
+            'city': 'Chennai'
+        }
+    }
 )
 
 result = response.json()
@@ -115,6 +173,14 @@ print(f"Language: {result['language_code']}")
 
 for speaker in result['speakers']:
     print(f"{speaker['speaker_id']}: {speaker['text']}")
+
+# File upload
+with open('audio.mp3', 'rb') as f:
+    files = {'audio_file': f}
+    data = {'seller_buyer_meta_data': '{"seller_identifier":"5901"}'}
+    response = requests.post('http://localhost:8888/translate-file', files=files, data=data)
+    print(response.json())
+```
 ```
 
 ## Docker Deployment
@@ -193,27 +259,66 @@ gcloud run deploy audio-translation-api \
   --set-env-vars SARVAM_API_KEY=your_api_key_here
 ```
 
-## Environment Variables
+## Supported Languages
 
-| Variable | Description | Default | Required |
-|----------|-------------|---------|----------|
-| `SARVAM_API_KEY` | SarvamAI API subscription key | - | Yes |
-| `FLASK_ENV` | Flask environment (development/production) | production | No |
-| `PORT` | Port to run the API on | 8888 | No |
+The API automatically detects and translates from these Indian languages to English:
+
+- **Hindi** (hi-IN)
+- **Telugu** (te-IN)
+- **Tamil** (ta-IN)
+- **Kannada** (kn-IN)
+- **Malayalam** (ml-IN)
+- **Bengali** (bn-IN)
+- **Gujarati** (gu-IN)
+- **Marathi** (mr-IN)
+- And more...
+
+The `language_code` field in the response indicates which language was detected.
 
 ## Project Structure
 
 ```
 translation/
-├── api.py                    # Flask REST API
-├── translation_service.py    # Core translation logic
-├── app.py                    # CLI version (original)
-├── requirements.txt          # Python dependencies
-├── Dockerfile               # Docker configuration
-├── .dockerignore            # Docker ignore rules
-├── .env.example             # Environment variables template
-└── README.md                # This file
+├── api.py                      # Flask REST API (v2.0)
+├── translation_service.py      # Core translation logic
+├── app.py                      # CLI version (original)
+├── requirements.txt            # Python dependencies
+├── Dockerfile                  # Docker configuration
+├── .dockerignore              # Docker ignore rules
+├── .gitignore                 # Git ignore rules
+├── .env.example               # Environment variables template
+├── README.md                  # This file
+├── API_V2_FEATURES.md         # v2.0 features documentation
+└── RESPONSE_FORMAT.md         # Response format examples
 ```
+
+## Environment Variables
+
+| Variable | Description | Default | Required |
+|----------|-------------|---------|----------|
+| `SARVAM_API_KEY` | SarvamAI API subscription key | khemchandwillprovidethekey | Yes |
+| `FLASK_ENV` | Flask environment (development/production) | production | No |
+| `PORT` | Port to run the API on | 8888 | No |
+
+## What's New in v2.0
+
+### ✨ New Features
+- **Metadata Pass-through**: Include custom metadata in requests and get it back in responses
+- **File Upload Support**: New `/translate-file` endpoint for direct file uploads
+- **Simplified Response**: Removed `full_transcript`, `start_time`, and `end_time` for cleaner output
+- **Multi-language Support**: Explicitly supports Telugu, Hindi, Tamil, and other Indian languages
+- **Auto-translation**: All audio is automatically translated to English
+
+### 🔄 Breaking Changes
+- Response format changed: removed `full_transcript` field
+- Removed `start_time` and `end_time` from speaker entries
+- API version bumped to 2.0.0
+
+### 📚 Migration from v1.0
+If you were using v1.0, update your code to:
+- Remove references to `full_transcript` in responses
+- Remove timestamp handling (`start_time`, `end_time`)
+- Optionally add `seller_buyer_meta_data` to requests
 
 ## Error Handling
 
