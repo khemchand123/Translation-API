@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="hero-section">
+  <h1 class="hero-title">📊 Analytics Dashboard</h1>
+  <p class="hero-subtitle">Real-time insights from buyer-seller conversations across India</p>
+</div>
+
+<section class="grid">
+  <div class="metric-card">
+    <div class="metric-value">{{ agg.overall.total_calls }}</div>
+    <div class="metric-label">Total Calls Processed</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-value">{{ agg.categories|length }}</div>
+    <div class="metric-label">Categories Analyzed</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-value">{{ agg.overall.cities_covered|length }}</div>
+    <div class="metric-label">Cities Covered</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-value">0</div>
+    <div class="metric-label">Active Insights</div>
+  </div>
+</section>
+
+<div class="card" style="margin-top: 40px;">
+  <h2>🌍 Geographic Distribution</h2>
+  <div id="topCities" style="height: 400px;"></div>
+</div>
+
+<div class="card" style="margin-top: 40px;">
+  <h2>💼 Category Insights</h2>
+  {% if agg.categories %}
+  <table>
+    <thead>
+      <tr><th>Category</th><th>Avg Price (INR)</th><th>Avg Quantity</th><th>Sentiment</th></tr>
+    </thead>
+    <tbody>
+      {% for cat, vals in agg.categories.items() %}
+      <tr>
+        <td>{{ cat }}</td>
+        <td>{{ vals.avg_price or '—' }}</td>
+        <td>{{ vals.avg_qty or '—' }}</td>
+        <td>
+          <span style="color: #10b981;">P: {{ vals.sentiment.get('positive',0) }}</span>,
+          <span style="color: #ef4444;">N: {{ vals.sentiment.get('negative',0) }}</span>,
+          <span style="color: #9ca3af;">Neu: {{ vals.sentiment.get('neutral',0) }}</span>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div style="text-align: center; padding: 60px 20px; color: #9ca3af;">
+    <div style="font-size: 64px; margin-bottom: 20px;">📈</div>
+    <h3>No Data Yet</h3>
+    <p>Start processing calls to see insights here</p>
+    <a href="/" class="button" style="margin-top: 20px; display: inline-block;">🎙️ Add Your First Call</a>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+  const topCities = {{ agg.overall.top_cities | tojson }};
+  const names = topCities.length ? topCities.map(x => x[0]) : ['No Data'];
+  const counts = topCities.length ? topCities.map(x => x[1]) : [0];
+  
+  Plotly.newPlot('topCities', [{
+    type: 'bar',
+    x: names,
+    y: counts,
+    marker: {
+      color: counts,
+      colorscale: [[0, '#6366f1'], [1, '#ec4899']],
+      line: { color: '#818cf8', width: 2 }
+    }
+  }], {
+    title: { text: 'Top Cities by Call Volume', font: { color: '#e5e7eb' } },
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(0,0,0,0)',
+    font: { color: '#9ca3af' },
+    xaxis: { gridcolor: 'rgba(99, 102, 241, 0.1)' },
+    yaxis: { gridcolor: 'rgba(99, 102, 241, 0.1)' },
+    margin: { t: 60, b: 60, l: 60, r: 40 }
+  }, {
+    responsive: true
+  });
+</script>
+{% endblock %}

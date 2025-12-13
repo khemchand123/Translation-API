@@ -1,0 +1,51 @@
+state,city,category,transcript,audio_url
+Maharashtra,Mumbai,Steel Rods,"We need 500 tons of TMT steel rods, 12mm diameter. What's your best price?",https://example.com/audio/call1.mp3
+Delhi,New Delhi,Electronics Components,"Looking for bulk microcontrollers. Can you deliver 10000 units by next month?",https://example.com/audio/call2.mp3
+Karnataka,Bangalore,Textiles,"Premium cotton fabric required for export. Need 5000 meters.",https://example.com/audio/call3.mp3
+Tamil Nadu,Chennai,Agriculture Seeds,"We want certified hybrid corn seeds. What varieties do you have?",https://example.com/audio/call4.mp3
+Gujarat,Ahmedabad,Packaging Materials,"Quote for corrugated boxes 18x12x10 inch. Quantity 50000 pieces.",https://example.com/audio/call5.mp3
+Maharashtra,Pune,Electronics Components,"Arduino boards and sensors needed for our IoT project. Urgent requirement.",https://example.com/audio/call6.mp3
+Delhi,Noida,Steel Rods,"Construction grade steel bars 16mm. Need competitive pricing.",https://example.com/audio/call7.mp3
+Karnataka,Mysore,Textiles,"Silk sarees wholesale. Looking for manufacturer direct contact.",https://example.com/audio/call8.mp3
+Rajasthan,Jaipur,Furniture,"Wooden furniture for hotel project. Need samples and catalog.",https://example.com/audio/call9.mp3
+Uttar Pradesh,Lucknow,Agriculture Seeds,"Organic vegetable seeds for farming cooperative.",https://example.com/audio/call10.mp3
+West Bengal,Kolkata,Packaging Materials,"Food grade plastic containers with lids. Monthly requirement 20000.",https://example.com/audio/call11.mp3
+Maharashtra,Nagpur,Steel Rods,"Industrial steel pipes 4 inch diameter. What's the delivery time?",https://example.com/audio/call12.mp3
+Gujarat,Surat,Textiles,"Synthetic fabric for garment manufacturing. Sample required first.",https://example.com/audio/call13.mp3
+Tamil Nadu,Coimbatore,Electronics Components,"LED drivers and power supplies for lighting project.",https://example.com/audio/call14.mp3
+Delhi,Gurgaon,Furniture,"Office furniture bulk order. Chairs, tables, cabinets needed.",https://example.com/audio/call15.mp3
+Karnataka,Hubli,Agriculture Seeds,"Wheat seeds high yield variety. Need certification details.",https://example.com/audio/call16.mp3
+Maharashtra,Mumbai,Packaging Materials,"Export quality cardboard boxes. Custom printing available?",https://example.com/audio/call17.mp3
+Uttar Pradesh,Kanpur,Steel Rods,"TMT bars for residential construction. Compare with competitors.",https://example.com/audio/call18.mp3
+Rajasthan,Udaipur,Textiles,"Traditional block print fabrics. Bulk order for retail chain.",https://example.com/audio/call19.mp3
+Delhi,Delhi,Electronics Components,"Raspberry Pi and accessories. Educational institution order.",https://example.com/audio/call20.mp3
+Gujarat,Vadodara,Furniture,"School furniture. Benches and desks for 500 students.",https://example.com/audio/call21.mp3
+Tamil Nadu,Madurai,Agriculture Seeds,"Paddy seeds for 100 acre cultivation. Expert advice needed.",https://example.com/audio/call22.mp3
+Karnataka,Belgaum,Packaging Materials,"Flexible packaging film for snack industry.",https://example.com/audio/call23.mp3
+Maharashtra,Aurangabad,Steel Rods,"Construction steel 20mm and 25mm. Urgent site requirement.",https://example.com/audio/call24.mp3
+West Bengal,Durgapur,Textiles,"Denim fabric for jeans manufacturing. Monthly 10000 meters.",https://example.com/audio/call25.mp3
+Telangana,Hyderabad,Electronics Components,"Solar panels and inverters for residential installation.",https://example.com/audio/call26.mp3
+Andhra Pradesh,Vijayawada,Agriculture Seeds,"Chilli seeds high quality. Contract farming opportunity.",https://example.com/audio/call27.mp3
+Bihar,Patna,Furniture,"Hospital furniture including beds and cabinets.",https://example.com/audio/call28.mp3
+Haryana,Faridabad,Steel Rods,"Stainless steel rods for railing work. Grade 304.",https://example.com/audio/call29.mp3
+Punjab,Ludhiana,Textiles,"Cotton yarn for knitwear industry. Competitive pricing important.",https://example.com/audio/call30.mp3
+Kerala,Kochi,Packaging Materials,"HDPE bottles for beverages. Need food safety certificate.",https://example.com/audio/call31.mp3
+Odisha,Bhubaneswar,Electronics Components,"CCTV cameras and DVR systems. Installation support needed?",https://example.com/audio/call32.mp3
+Maharashtra,Nashik,Agriculture Seeds,"Grape vine saplings for vineyard expansion.",https://example.com/audio/call33.mp3
+Gujarat,Rajkot,Furniture,"Modular kitchen cabinets. Customization possible?",https://example.com/audio/call34.mp3
+Tamil Nadu,Salem,Steel Rods,"Mild steel angles and channels. Fabrication project requirement.",https://example.com/audio/call35.mp3
+Karnataka,Mangalore,Textiles,"Polyester fabric for raincoat manufacturing.",https://example.com/audio/call36.mp3
+Delhi,Faridabad,Packaging Materials,"Bubble wrap and stretch film. Regular monthly supply needed.",https://example.com/audio/call37.mp3
+Maharashtra,Kolhapur,Electronics Components,"Electrical switches and sockets. Building construction bulk order.",https://example.com/audio/call38.mp3
+Uttar Pradesh,Varanasi,Agriculture Seeds,"Organic fertilizers along with seeds. Complete package?",https://example.com/audio/call39.mp3
+Rajasthan,Jodhpur,Furniture,"Antique style wooden furniture for hotel decor.",https://example.com/audio/call40.mp3
+West Bengal,Siliguri,Steel Rods,"Galvanized iron pipes for water supply project.",https://example.com/audio/call41.mp3
+Telangana,Warangal,Textiles,"Uniform fabric for corporate clients. Durable quality needed.",https://example.com/audio/call42.mp3
+Andhra Pradesh,Guntur,Agriculture Seeds,"Sunflower seeds and guidance on cultivation.",https://example.com/audio/call43.mp3
+Gujarat,Anand,Packaging Materials,"Milk pouches and crates for dairy business.",https://example.com/audio/call44.mp3
+Tamil Nadu,Trichy,Electronics Components,"Industrial automation sensors and PLCs.",https://example.com/audio/call45.mp3
+Karnataka,Davangere,Furniture,"Classroom furniture for new school building.",https://example.com/audio/call46.mp3
+Maharashtra,Solapur,Steel Rods,"Reinforcement bars for bridge construction.",https://example.com/audio/call47.mp3
+Kerala,Trivandrum,Textiles,"Handloom fabrics for fashion designer collection.",https://example.com/audio/call48.mp3
+Haryana,Panipat,Packaging Materials,"Corrugated sheets for packaging factory setup.",https://example.com/audio/call49.mp3
+Punjab,Amritsar,Agriculture Seeds,"Basmati rice seeds premium quality.",https://example.com/audio/call50.mp3

@@ -1,0 +1,1078 @@
+{% extends "base.html" %}
+
+{% block title %}Bulk Calls Processing{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1600px; animation: slideIn 0.6s ease;">
+  <div class="page-header">
+    <h1 class="page-title">🗺️ Bulk Calls Processing</h1>
+    <p class="page-subtitle">Process thousands of calls and visualize insights across India</p>
+  </div>
+
+  <!-- Upload Section -->
+  <div class="card" style="margin-bottom: 30px;">
+    <h2 style="margin-bottom: 20px; font-size: 24px;">📤 Upload Bulk Calls Data</h2>
+    
+    <!-- Tab Switcher -->
+    <div style="display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid rgba(99, 102, 241, 0.2); padding-bottom: 10px;">
+      <button type="button" class="tab-btn active" data-tab="audioLinks" style="padding: 12px 24px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+        🔗 Audio Links + Metadata CSV
+      </button>
+      <button type="button" class="tab-btn" data-tab="csvUpload" style="padding: 12px 24px; background: rgba(99, 102, 241, 0.1); border: none; border-radius: 8px; color: #9ca3af; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+        📄 CSV File Upload
+      </button>
+    </div>
+
+    <!-- Audio Links + CSV Tab -->
+    <div id="audioLinksTab" class="tab-content active">
+      <form id="audioLinksForm">
+        <div class="form-group">
+          <label>Audio URLs (One per line)</label>
+          <textarea name="audio_urls" id="audioUrlsInput" rows="8" placeholder="Paste audio URLs, one per line:
+https://storage.googleapis.com/audio1.mp3
+https://storage.googleapis.com/audio2.mp3
+https://storage.googleapis.com/audio3.mp3" required style="font-family: monospace; font-size: 13px;"></textarea>
+          <small style="color: #94a3b8; margin-top: 8px; display: block;">
+            Each line = one audio URL. Max 100 URLs at once.
+          </small>
+        </div>
+        
+        <div class="form-group">
+          <label>Metadata CSV File (Must have same number of rows as audio URLs)</label>
+          <input type="file" name="metadata_csv" id="metadataCsvInput" accept=".csv" required style="cursor: pointer;">
+          <small style="color: #94a3b8; margin-top: 8px; display: block;">
+            Required columns: buyer_identifier, seller_identifier, city_name, state_name, mcat_name, mcat_id, pns_call_modrefname
+          </small>
+        </div>
+        
+        <button type="submit" class="btn btn-primary" id="processLinksBtn">
+          <span>🚀 Process Audio Links</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- CSV Upload Tab -->
+    <div id="csvUploadTab" class="tab-content" style="display: none;">
+      <form id="bulkUploadForm" enctype="multipart/form-data">
+        <div class="form-group">
+          <label>CSV File (Required columns: state, city, category, transcript, audio_url)</label>
+          <input type="file" name="csv_file" accept=".csv" required style="cursor: pointer;">
+          <small style="color: #94a3b8; margin-top: 8px; display: block;">
+            Max 1000 calls per upload. Format: state, city, category, transcript, audio_url
+          </small>
+        </div>
+        <button type="submit" class="btn btn-primary" id="uploadBtn">
+          <span>🚀 Start Processing</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Processing Status -->
+  <div id="processingStatus" style="display: none; margin-bottom: 30px;">
+    <div class="card">
+      <div style="display: flex; align-items: center; gap: 20px;">
+        <div class="spinner"></div>
+        <div style="flex: 1;">
+          <h3 style="margin: 0 0 10px 0; font-size: 18px;">Processing Calls...</h3>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <p style="margin: 10px 0 0 0; color: #94a3b8;" id="progressText">0 / 0 calls processed</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- India Map Section -->
+  <div class="card" id="mapSection">
+    <h2 style="margin-bottom: 20px; font-size: 24px;">🇮🇳 India Call Distribution Map</h2>
+    <div id="indiaMap" style="min-height: 700px; position: relative; background: rgba(13, 13, 20, 0.4); border-radius: 12px; overflow: hidden;">
+      <!-- Map will be rendered here -->
+    </div>
+    <div style="margin-top: 20px; display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
+      <div class="legend-item">
+        <span class="legend-color" style="background: #1e293b;"></span>
+        <span>No calls</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color" style="background: #86efac;"></span>
+        <span>1-2 calls</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color" style="background: #4ade80;"></span>
+        <span>3-5 calls</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color" style="background: #22c55e;"></span>
+        <span>6-10 calls</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color" style="background: #16a34a;"></span>
+        <span>11-50 calls</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color" style="background: #15803d;"></span>
+        <span>50+ calls</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- State Details Panel (Hidden by default) -->
+  <div id="stateDetailsPanel" class="state-details-panel">
+    <div class="state-details-header">
+      <h3 id="stateTitle">State Details</h3>
+      <button onclick="closeStateDetails()" class="close-btn">✕</button>
+    </div>
+    <div class="state-details-content" id="stateDetailsContent">
+      <!-- Details will be loaded here -->
+    </div>
+  </div>
+</div>
+
+<style>
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(99, 102, 241, 0.2);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(99, 102, 241, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+  }
+
+  .legend-color {
+    width: 30px;
+    height: 20px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .tab-content {
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .state-details-panel {
+    position: fixed;
+    right: -500px;
+    top: 0;
+    width: 480px;
+    height: 100vh;
+    background: linear-gradient(135deg, rgba(19, 19, 26, 0.98) 0%, rgba(31, 31, 46, 0.98) 100%);
+    backdrop-filter: blur(20px);
+    border-left: 2px solid rgba(99, 102, 241, 0.3);
+    box-shadow: -20px 0 60px rgba(0, 0, 0, 0.5);
+    transition: right 0.4s ease;
+    z-index: 1000;
+    overflow-y: auto;
+  }
+
+  .state-details-panel.open {
+    right: 0;
+  }
+
+  .state-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px;
+    border-bottom: 2px solid rgba(99, 102, 241, 0.2);
+    position: sticky;
+    top: 0;
+    background: rgba(19, 19, 26, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 10;
+  }
+
+  .state-details-header h3 {
+    margin: 0;
+    font-size: 24px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .close-btn {
+    background: rgba(236, 72, 153, 0.2);
+    border: 2px solid rgba(236, 72, 153, 0.3);
+    color: var(--secondary);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .close-btn:hover {
+    background: rgba(236, 72, 153, 0.3);
+    transform: rotate(90deg);
+  }
+
+  .state-details-content {
+    padding: 30px;
+  }
+
+  .detail-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(99, 102, 241, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+  }
+
+  .detail-section h4 {
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    color: var(--primary-light);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .stat-item {
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+    border-radius: 10px;
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    transition: all 0.3s ease;
+  }
+
+  .stat-item:hover {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+    border-color: rgba(99, 102, 241, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .stat-item label {
+    display: block;
+    font-size: 10px;
+    color: #94a3b8;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+
+  .stat-item .value {
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+  }
+
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .tag {
+    padding: 6px 12px;
+    background: rgba(99, 102, 241, 0.2);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--primary-light);
+  }
+
+  .call-item {
+    padding: 15px;
+    background: rgba(13, 13, 20, 0.6);
+    border-radius: 8px;
+    border-left: 3px solid var(--primary);
+    margin-bottom: 10px;
+  }
+
+  .call-item .category-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background: rgba(236, 72, 153, 0.2);
+    border-radius: 12px;
+    font-size: 11px;
+    color: var(--secondary);
+    margin-bottom: 8px;
+  }
+
+  .call-item .transcript {
+    font-size: 13px;
+    color: #cbd5e1;
+    line-height: 1.6;
+  }
+
+  /* India map SVG styling */
+  .india-state {
+    /* fill color is set dynamically by JavaScript */
+    stroke: rgba(148, 163, 184, 0.4);
+    stroke-width: 1.5;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  }
+
+  .india-state:hover {
+    stroke: rgba(99, 102, 241, 0.9);
+    stroke-width: 2.5;
+    filter: brightness(1.3) drop-shadow(0 4px 12px rgba(99, 102, 241, 0.5));
+  }
+
+  .state-label {
+    fill: #94a3b8;
+    font-size: 11px;
+    font-weight: 600;
+    pointer-events: none;
+    text-anchor: middle;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .state-tooltip {
+    position: absolute;
+    background: rgba(13, 13, 20, 0.95);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(99, 102, 241, 0.5);
+    border-radius: 12px;
+    padding: 15px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 100;
+    min-width: 250px;
+  }
+
+  .state-tooltip.show {
+    opacity: 1;
+  }
+
+  .state-tooltip h4 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    color: var(--primary-light);
+  }
+
+  .state-tooltip .tooltip-stat {
+    font-size: 13px;
+    color: #cbd5e1;
+    margin: 5px 0;
+  }
+
+  .sentiment-bar {
+    display: flex;
+    gap: 5px;
+    margin-top: 10px;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .sentiment-positive {
+    background: #22c55e;
+  }
+
+  .sentiment-neutral {
+    background: #eab308;
+  }
+
+  .sentiment-negative {
+    background: #ef4444;
+  }
+</style>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+  let eventSource = null;
+  const stateData = {};
+  let indiaGeoJSON = null;
+  let svg = null;
+  let projection = null;
+  let path = null;
+
+  // Comprehensive City to State mapping
+  const cityToState = {
+    // Maharashtra
+    'Mumbai': 'Maharashtra', 'Pune': 'Maharashtra', 'Nagpur': 'Maharashtra', 'Nashik': 'Maharashtra', 'Aurangabad': 'Maharashtra',
+    // Gujarat
+    'Ahmedabad': 'Gujarat', 'Surat': 'Gujarat', 'Vadodara': 'Gujarat', 'Rajkot': 'Gujarat', 'Jamnagar': 'Gujarat', 'Bhavnagar': 'Gujarat', 'Gandhinagar': 'Gujarat',
+    // Karnataka
+    'Bengaluru': 'Karnataka', 'Bangalore': 'Karnataka', 'Mysore': 'Karnataka', 'Hubli': 'Karnataka', 'Mangalore': 'Karnataka',
+    // Tamil Nadu
+    'Chennai': 'Tamil Nadu', 'Coimbatore': 'Tamil Nadu', 'Madurai': 'Tamil Nadu', 'Tiruchirappalli': 'Tamil Nadu', 'Salem': 'Tamil Nadu',
+    // Delhi
+    'Delhi': 'NCT of Delhi', 'New Delhi': 'NCT of Delhi',
+    // Rajasthan
+    'Jaipur': 'Rajasthan', 'Jodhpur': 'Rajasthan', 'Udaipur': 'Rajasthan', 'Kota': 'Rajasthan',
+    // Uttar Pradesh
+    'Lucknow': 'Uttar Pradesh', 'Kanpur': 'Uttar Pradesh', 'Agra': 'Uttar Pradesh', 'Varanasi': 'Uttar Pradesh', 'Noida': 'Uttar Pradesh', 'Ghaziabad': 'Uttar Pradesh',
+    // West Bengal
+    'Kolkata': 'West Bengal', 'Howrah': 'West Bengal', 'Durgapur': 'West Bengal',
+    // Telangana
+    'Hyderabad': 'Telangana', 'Warangal': 'Telangana',
+    // Andhra Pradesh
+    'Visakhapatnam': 'Andhra Pradesh', 'Vijayawada': 'Andhra Pradesh', 'Guntur': 'Andhra Pradesh',
+    // Kerala
+    'Thiruvananthapuram': 'Kerala', 'Kochi': 'Kerala', 'Kozhikode': 'Kerala', 'Thrissur': 'Kerala',
+    // Punjab
+    'Chandigarh': 'Chandigarh', 'Ludhiana': 'Punjab', 'Amritsar': 'Punjab', 'Jalandhar': 'Punjab',
+    // Haryana
+    'Gurugram': 'Haryana', 'Gurgaon': 'Haryana', 'Faridabad': 'Haryana',
+    // Madhya Pradesh
+    'Indore': 'Madhya Pradesh', 'Bhopal': 'Madhya Pradesh', 'Jabalpur': 'Madhya Pradesh', 'Gwalior': 'Madhya Pradesh',
+    // Bihar
+    'Patna': 'Bihar', 'Gaya': 'Bihar',
+    // Jharkhand
+    'Ranchi': 'Jharkhand', 'Jamshedpur': 'Jharkhand',
+    // Odisha
+    'Bhubaneswar': 'Odisha', 'Cuttack': 'Odisha',
+    // Assam
+    'Guwahati': 'Assam', 'Dispur': 'Assam',
+    // Chhattisgarh
+    'Raipur': 'Chhattisgarh', 'Bhilai': 'Chhattisgarh',
+    // Uttarakhand
+    'Dehradun': 'Uttarakhand', 'Haridwar': 'Uttarakhand',
+    // Goa
+    'Panaji': 'Goa', 'Margao': 'Goa'
+  };
+
+  function getCityState(cityName) {
+    if (!cityName) return null;
+    const normalizedCity = cityName.trim();
+    return cityToState[normalizedCity] || null;
+  }
+
+  // Tab switching
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      
+      // Update buttons
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('active');
+        b.style.background = 'rgba(99, 102, 241, 0.1)';
+        b.style.color = '#9ca3af';
+      });
+      btn.classList.add('active');
+      btn.style.background = 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)';
+      btn.style.color = 'white';
+      
+      // Update content
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.style.display = 'none';
+      });
+      document.getElementById(tab + 'Tab').style.display = 'block';
+    });
+  });
+
+  // Audio Links Form Handler
+  document.getElementById('audioLinksForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const audioUrls = document.getElementById('audioUrlsInput').value.trim().split('\n').filter(url => url.trim());
+    const metadataFile = document.getElementById('metadataCsvInput').files[0];
+    
+    if (!audioUrls.length || !metadataFile) {
+      showMessage('Please provide both audio URLs and metadata CSV file', 'error');
+      return;
+    }
+    
+    console.log('🚀 Processing audio links:', audioUrls.length);
+    
+    // Read CSV file
+    const csvText = await metadataFile.text();
+    const csvLines = csvText.trim().split('\n');
+    const headers = csvLines[0].split(',').map(h => h.trim());
+    const rows = csvLines.slice(1).map(line => {
+      const values = line.split(',').map(v => v.trim());
+      return headers.reduce((obj, header, idx) => {
+        obj[header] = values[idx];
+        return obj;
+      }, {});
+    });
+    
+    if (audioUrls.length !== rows.length) {
+      showMessage(`Mismatch: ${audioUrls.length} audio URLs but ${rows.length} metadata rows`, 'error');
+      return;
+    }
+    
+    // Show processing status
+    document.getElementById('processingStatus').style.display = 'block';
+    document.getElementById('progressFill').style.width = '0%';
+    document.getElementById('progressText').textContent = `0 / ${audioUrls.length} calls processed`;
+    
+    // Process each audio link
+    for (let i = 0; i < audioUrls.length; i++) {
+      const audioUrl = audioUrls[i].trim();
+      const metadata = rows[i];
+      
+      console.log(`\n📤 Processing ${i + 1}/${audioUrls.length}:`, audioUrl);
+      console.log('Metadata:', metadata);
+      
+      try {
+        const response = await fetch('/', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            audio_url: audioUrl,
+            metadata: metadata
+          })
+        });
+        
+        const result = await response.json();
+        console.log('✅ Full Response:', JSON.stringify(result, null, 2));
+        
+        // Extract location from webhook response
+        if (result.webhook_response && result.webhook_response[0]?.output) {
+          const output = result.webhook_response[0].output;
+          console.log('📍 Output object:', output);
+          console.log('📍 Location field:', output.location);
+          
+          const location = output.location || '';
+          let [city, state] = location.split(',').map(s => s?.trim());
+          
+          console.log(`🔍 Parsed - City: "${city}", State: "${state}"`);
+          
+          // If no state, try to map city to state
+          if (!state && city) {
+            state = getCityState(city);
+            console.log(`🗺️ Mapped ${city} → ${state}`);
+          }
+          
+          // Also try to get from metadata if not in location
+          if (!state && metadata.state_name) {
+            state = metadata.state_name.trim();
+            console.log(`📋 Got state from metadata: ${state}`);
+          }
+          
+          if (state) {
+            console.log(`✅ Processing state: "${state}"`);
+            
+            // Update state data
+            if (!stateData[state]) {
+              console.log(`🆕 Creating new entry for state: ${state}`);
+              stateData[state] = {
+                call_count: 0,
+                cities: new Set(),
+                insights: [],
+                buyer_intents: { Low: 0, Medium: 0, High: 0 },
+                urgency_levels: { Low: 0, Medium: 0, High: 0 }
+              };
+            }
+            stateData[state].call_count++;
+            if (city) stateData[state].cities.add(city);
+            
+            // Track intent and urgency
+            if (output.buyer_intent) {
+              stateData[state].buyer_intents[output.buyer_intent] = (stateData[state].buyer_intents[output.buyer_intent] || 0) + 1;
+            }
+            if (output.urgency) {
+              stateData[state].urgency_levels[output.urgency] = (stateData[state].urgency_levels[output.urgency] || 0) + 1;
+            }
+            
+            stateData[state].insights.push({
+              buyer_intent: output.buyer_intent,
+              urgency: output.urgency,
+              seller_interest: output.seller_interest,
+              products: output.products || [],
+              summary: output.short_summary,
+              city: city
+            });
+            
+            console.log(`✅ State data updated:`, stateData[state]);
+            console.log(`📊 Total states in data:`, Object.keys(stateData));
+            
+            // Update map
+            updateMap();
+          } else {
+            console.warn(`⚠️ Could not determine state for location: ${location}`);
+          }
+        } else {
+          console.error('❌ No webhook_response or output in result');
+        }
+        
+        // Update progress
+        const percent = ((i + 1) / audioUrls.length) * 100;
+        document.getElementById('progressFill').style.width = percent + '%';
+        document.getElementById('progressText').textContent = `${i + 1} / ${audioUrls.length} calls processed`;
+        
+      } catch (error) {
+        console.error(`❌ Error processing ${audioUrl}:`, error);
+      }
+      
+      // Small delay to avoid overwhelming the server
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+    
+    document.getElementById('processingStatus').style.display = 'none';
+    
+    // Show completion message
+    const messageDiv = document.createElement('div');
+    messageDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 20px 30px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 9999; animation: slideIn 0.5s ease;';
+    messageDiv.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <div style="font-size: 32px;">✅</div>
+        <div>
+          <div style="font-weight: 600; font-size: 16px;">Processing Complete!</div>
+          <div style="font-size: 14px; opacity: 0.9; margin-top: 5px;">${audioUrls.length} calls processed successfully</div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(messageDiv);
+    setTimeout(() => messageDiv.remove(), 5000);
+  });
+
+  // Load India map from external GeoJSON source
+  async function loadIndiaMap() {
+    try {
+      // Using a reliable India GeoJSON source
+      const response = await fetch('https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson');
+      indiaGeoJSON = await response.json();
+      initMap();
+    } catch (error) {
+      console.error('Error loading India map:', error);
+      // Fallback: use Plotly's built-in India map
+      usePlotlyMap();
+    }
+  }
+
+  // Form submission
+  document.getElementById('bulkUploadForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    
+    try {
+      const response = await fetch('/bulk-upload', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        document.getElementById('processingStatus').style.display = 'block';
+        startSSE();
+      } else {
+        showMessage('Error: ' + result.error, 'error');
+      }
+    } catch (error) {
+      showMessage('Upload failed: ' + error.message, 'error');
+    }
+  });
+
+  // Server-Sent Events for real-time updates
+  function startSSE() {
+    if (eventSource) {
+      eventSource.close();
+    }
+    
+    eventSource = new EventSource('/bulk-stream');
+    
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      
+      if (data.heartbeat) {
+        return;
+      }
+      
+      if (data.complete) {
+        eventSource.close();
+        document.getElementById('processingStatus').style.display = 'none';
+        return;
+      }
+      
+      if (data.error) {
+        showMessage('Processing error: ' + data.error, 'error');
+        eventSource.close();
+        return;
+      }
+      
+      // Update state data
+      if (data.state) {
+        stateData[data.state] = {
+          call_count: data.call_count,
+          cities_count: data.cities_count,
+          categories: data.categories,
+          positive: data.positive,
+          negative: data.negative,
+          neutral: data.neutral
+        };
+        updateMap();
+      }
+      
+      // Update progress
+      if (data.processed && data.total) {
+        const percent = (data.processed / data.total) * 100;
+        document.getElementById('progressFill').style.width = percent + '%';
+        document.getElementById('progressText').textContent = 
+          `${data.processed} / ${data.total} calls processed`;
+      }
+    };
+    
+    eventSource.onerror = () => {
+      eventSource.close();
+    };
+  }
+
+  // Initialize map with D3.js
+  function initMap() {
+    if (!indiaGeoJSON) return;
+    
+    const mapContainer = document.getElementById('indiaMap');
+    const width = mapContainer.clientWidth || 1200;
+    const height = 700;
+    
+    // Clear any existing content
+    mapContainer.innerHTML = '';
+    
+    const svg = d3.select('#indiaMap')
+      .append('svg')
+      .attr('width', '100%')
+      .attr('height', height)
+      .attr('viewBox', `0 0 ${width} ${height}`)
+      .style('background', 'rgba(13, 13, 20, 0.4)');
+    
+    // Add gradient background
+    const defs = svg.append('defs');
+    const gradient = defs.append('linearGradient')
+      .attr('id', 'mapGradient')
+      .attr('x1', '0%')
+      .attr('y1', '0%')
+      .attr('x2', '100%')
+      .attr('y2', '100%');
+    gradient.append('stop')
+      .attr('offset', '0%')
+      .attr('stop-color', 'rgba(99, 102, 241, 0.08)');
+    gradient.append('stop')
+      .attr('offset', '100%')
+      .attr('stop-color', 'rgba(236, 72, 153, 0.08)');
+    
+    svg.append('rect')
+      .attr('width', '100%')
+      .attr('height', '100%')
+      .attr('fill', 'url(#mapGradient)');
+    
+    // Create tooltip
+    const tooltip = d3.select('#indiaMap')
+      .append('div')
+      .attr('class', 'state-tooltip');
+    
+    // Setup projection for India map
+    const projection = d3.geoMercator()
+      .fitSize([width, height], indiaGeoJSON);
+    
+    const path = d3.geoPath().projection(projection);
+    
+    // Draw states
+    const statesGroup = svg.append('g').attr('class', 'states');
+    
+    statesGroup.selectAll('path')
+      .data(indiaGeoJSON.features)
+      .enter()
+      .append('path')
+      .attr('d', path)
+      .attr('class', 'india-state')
+      .style('fill', '#1e293b')  // Initial grey color
+      .attr('id', d => {
+        const stateName = d.properties.ST_NM || d.properties.name || d.properties.NAME;
+        return 'state-' + getStateCode(stateName);
+      })
+      .attr('data-name', d => d.properties.ST_NM || d.properties.name || d.properties.NAME)
+      .on('mouseenter', function(event, d) {
+        const stateName = d.properties.ST_NM || d.properties.name || d.properties.NAME;
+        showTooltip(event, stateName);
+      })
+      .on('mousemove', function(event) {
+        moveTooltip(event);
+      })
+      .on('mouseleave', function() {
+        hideTooltip();
+      })
+      .on('click', function(event, d) {
+        const stateName = d.properties.ST_NM || d.properties.name || d.properties.NAME;
+        showStateDetails(stateName);
+      });
+    
+    // Add state labels
+    statesGroup.selectAll('text')
+      .data(indiaGeoJSON.features)
+      .enter()
+      .append('text')
+      .attr('class', 'state-label')
+      .attr('transform', d => {
+        const centroid = path.centroid(d);
+        return `translate(${centroid[0]}, ${centroid[1]})`;
+      })
+      .text(d => {
+        const stateName = d.properties.ST_NM || d.properties.name || d.properties.NAME;
+        return getStateCode(stateName);
+      })
+      .style('font-size', '10px');
+  }
+  
+  // Map state names to codes
+  function getStateCode(stateName) {
+    const stateCodeMap = {
+      'Andhra Pradesh': 'AP', 'Arunachal Pradesh': 'AR', 'Assam': 'AS',
+      'Bihar': 'BR', 'Chhattisgarh': 'CT', 'Goa': 'GA', 'Gujarat': 'GJ',
+      'Haryana': 'HR', 'Himachal Pradesh': 'HP', 'Jharkhand': 'JH',
+      'Karnataka': 'KA', 'Kerala': 'KL', 'Madhya Pradesh': 'MP',
+      'Maharashtra': 'MH', 'Manipur': 'MN', 'Meghalaya': 'ML',
+      'Mizoram': 'MZ', 'Nagaland': 'NL', 'Odisha': 'OR', 'Punjab': 'PB',
+      'Rajasthan': 'RJ', 'Sikkim': 'SK', 'Tamil Nadu': 'TN',
+      'Telangana': 'TG', 'Tripura': 'TR', 'Uttar Pradesh': 'UP',
+      'Uttarakhand': 'UT', 'West Bengal': 'WB',
+      'Andaman & Nicobar': 'AN', 'Chandigarh': 'CH',
+      'Dadra and Nagar Haveli and Daman and Diu': 'DD',
+      'Delhi': 'DL', 'Jammu & Kashmir': 'JK', 'Ladakh': 'LA',
+      'Lakshadweep': 'LD', 'Puducherry': 'PY'
+    };
+    return stateCodeMap[stateName] || stateName.substring(0, 2).toUpperCase();
+  }
+  
+  // Fallback to Plotly if D3 fails
+  function usePlotlyMap() {
+    const mapContainer = document.getElementById('indiaMap');
+    mapContainer.innerHTML = '<div id="plotlyMap" style="width: 100%; height: 700px;"></div>';
+    
+    // Initialize with empty data
+    const data = [{
+      type: 'choropleth',
+      locationmode: 'geojson-id',
+      locations: [],
+      z: [],
+      geojson: 'https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson',
+      colorscale: [
+        [0, '#1e293b'],
+        [0.2, '#dcfce7'],
+        [0.4, '#86efac'],
+        [0.6, '#22c55e'],
+        [0.8, '#16a34a'],
+        [1, '#15803d']
+      ],
+      marker: {
+        line: {
+          color: 'rgba(148, 163, 184, 0.4)',
+          width: 1.5
+        }
+      }
+    }];
+    
+    const layout = {
+      geo: {
+        scope: 'asia',
+        visible: false,
+        resolution: 50,
+        center: { lon: 78.9629, lat: 22.5937 },
+        projection: { type: 'mercator' },
+        showland: false,
+        showframe: false,
+        bgcolor: 'rgba(0,0,0,0)'
+      },
+      paper_bgcolor: 'rgba(0,0,0,0)',
+      plot_bgcolor: 'rgba(0,0,0,0)',
+      margin: { t: 0, b: 0, l: 0, r: 0 }
+    };
+    
+    Plotly.newPlot('plotlyMap', data, layout, { responsive: true });
+  }
+
+  function getStateColor(callCount) {
+    if (!callCount || callCount === 0) return '#1e293b';
+    if (callCount <= 2) return '#86efac';     // Light green
+    if (callCount <= 5) return '#4ade80';     // Medium green  
+    if (callCount <= 10) return '#22c55e';    // Green
+    if (callCount <= 50) return '#16a34a';    // Dark green
+    return '#15803d';                          // Darkest green for 100+
+  }
+
+  function showMessage(message, type = 'success') {
+    const messageDiv = document.createElement('div');
+    const bgColor = type === 'error' ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' : 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+    messageDiv.style.cssText = `position: fixed; top: 20px; right: 20px; background: ${bgColor}; color: white; padding: 20px 30px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 9999; animation: slideIn 0.5s ease;`;
+    messageDiv.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <div style="font-size: 24px;">${type === 'error' ? '❌' : '✅'}</div>
+        <div style="font-weight: 600; font-size: 14px;">${message}</div>
+      </div>
+    `;
+    document.body.appendChild(messageDiv);
+    setTimeout(() => messageDiv.remove(), 5000);
+  }
+
+  function updateMap() {
+    console.log('🗺️ Updating map with state data:', Object.keys(stateData).map(s => `${s}: ${stateData[s].call_count}`));
+    
+    let updatedCount = 0;
+    
+    // Update all states based on data
+    d3.selectAll('.india-state').each(function() {
+      const stateName = d3.select(this).attr('data-name');
+      const data = stateData[stateName];
+      
+      const color = data ? getStateColor(data.call_count) : '#1e293b';
+      
+      if (data) {
+        console.log(`✅ Coloring ${stateName}: ${data.call_count} calls → ${color}`);
+        updatedCount++;
+      }
+      
+      d3.select(this)
+        .transition()
+        .duration(500)
+        .style('fill', color)
+        .attr('stroke', '#4b5563')
+        .attr('stroke-width', '1');
+    });
+    
+    console.log(`📊 Updated ${updatedCount} states on map`);
+    
+    if (updatedCount === 0) {
+      console.warn('⚠️ No states were colored! Checking state name matches...');
+      console.log('Available state names in GeoJSON:', []);
+      d3.selectAll('.india-state').each(function() {
+        const name = d3.select(this).attr('data-name');
+        console.log(`  - GeoJSON state: "${name}"`);
+      });
+      console.log('State names in our data:', Object.keys(stateData));
+    }
+  }
+
+  function showTooltip(event, stateName) {
+    const data = stateData[stateName];
+    if (!data) return;
+    
+    const tooltip = d3.select('.state-tooltip');
+    
+    tooltip.html(`
+      <h4>${stateName}</h4>
+      <div class="tooltip-stat"><strong>${data.call_count}</strong> Total Calls</div>
+      <div class="tooltip-stat"><strong>${data.cities.size}</strong> Cities</div>
+      <div class="tooltip-stat">High Intent: <strong>${data.buyer_intents.High || 0}</strong></div>
+    `);
+    
+    tooltip.classed('show', true);
+    moveTooltip(event);
+  }
+
+  function moveTooltip(event) {
+    const tooltip = d3.select('.state-tooltip');
+    tooltip
+      .style('left', (event.pageX + 20) + 'px')
+      .style('top', (event.pageY - 50) + 'px');
+  }
+
+  function hideTooltip() {
+    d3.select('.state-tooltip').classed('show', false);
+  }
+
+  async function showStateDetails(stateName) {
+    const data = stateData[stateName];
+    
+    if (!data) {
+      showMessage(`No data available for ${stateName}`, 'error');
+      return;
+    }
+    
+    document.getElementById('stateTitle').textContent = stateName;
+    
+    const citiesArray = Array.from(data.cities);
+    const totalCalls = data.call_count || 0;
+    const citiesCovered = citiesArray.length || 0;
+    const highIntent = data.buyer_intents?.High || 0;
+    const highUrgency = data.urgency_levels?.High || 0;
+    
+    const detailsHTML = `
+      <div class="detail-section">
+        <h4>📊 Overview Statistics</h4>
+        <div class="stat-grid">
+          <div class="stat-item">
+            <label>Total Calls</label>
+            <div class="value">${totalCalls}</div>
+          </div>
+          <div class="stat-item">
+            <label>Cities Covered</label>
+            <div class="value">${citiesCovered}</div>
+          </div>
+          <div class="stat-item">
+            <label>High Intent</label>
+            <div class="value" style="color: #22c55e;">${highIntent}</div>
+          </div>
+          <div class="stat-item">
+            <label>High Urgency</label>
+            <div class="value" style="color: #ef4444;">${highUrgency}</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="detail-section">
+        <h4>🏙️ Cities (${citiesArray.length})</h4>
+        <div class="tag-list">
+          ${citiesArray.map(city => `<span class="tag">${city}</span>`).join('')}
+        </div>
+      </div>
+      
+      <div class="detail-section">
+        <h4>💼 Recent Insights</h4>
+        <div style="max-height: 400px; overflow-y: auto;">
+          ${data.insights.slice(0, 10).map((insight, idx) => `
+            <div style="background: rgba(99, 102, 241, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+              <div style="display: flex; gap: 10px; margin-bottom: 8px;">
+                <span style="background: rgba(34, 197, 94, 0.2); color: #86efac; padding: 4px 12px; border-radius: 6px; font-size: 12px;">${insight.buyer_intent || 'N/A'} Intent</span>
+                <span style="background: rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 4px 12px; border-radius: 6px; font-size: 12px;">${insight.urgency || 'N/A'} Urgency</span>
+              </div>
+              <p style="color: #e5e7eb; font-size: 13px; margin: 8px 0; line-height: 1.6;">${insight.summary ? insight.summary.substring(0, 200) + '...' : 'No summary'}</p>
+              <small style="color: #9ca3af;">📍 ${insight.city || 'Unknown'}</small>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    
+    document.getElementById('stateDetailsContent').innerHTML = detailsHTML;
+    document.getElementById('stateDetailsPanel').classList.add('open');
+  }
+
+  function closeStateDetails() {
+    document.getElementById('stateDetailsPanel').classList.remove('open');
+  }
+
+  // Initialize map on load
+  loadIndiaMap();
+</script>
+{% endblock %}

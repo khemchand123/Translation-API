@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+  <h2>Per-Call Insight</h2>
+  <p><strong>Category:</strong> {{ result.metadata.category_name }} | <strong>City:</strong> {{ result.metadata.city }} | <strong>State:</strong> {{ result.metadata.state }}</p>
+  <p><strong>Buyer:</strong> {{ result.metadata.buyer_id }} | <strong>Seller:</strong> {{ result.metadata.seller_id }} | <strong>Duration:</strong> {{ result.metadata.duration }}s</p>
+  <h3>Transcript</h3>
+  <pre class="transcript">{{ result.transcript }}</pre>
+  <h3>Extracted</h3>
+  <ul>
+    <li><strong>Specs:</strong> {{ result.extracted.specs|join(', ') if result.extracted.specs else '—' }}</li>
+    <li><strong>Prices:</strong> {{ result.extracted.prices|join(', ') if result.extracted.prices else '—' }}</li>
+    <li><strong>Quantities:</strong> {{ result.extracted.quantities|join(', ') if result.extracted.quantities else '—' }}</li>
+    <li><strong>Sentiment:</strong> {{ result.extracted.sentiment }}</li>
+  </ul>
+  <h3>Derived</h3>
+  <ul>
+    <li><strong>Avg Price:</strong> {{ result.derived.avg_price or '—' }}</li>
+    <li><strong>Total Qty:</strong> {{ result.derived.total_qty or '—' }}</li>
+    <li><strong>Price per Qty:</strong> {{ result.derived.price_per_qty|round(2) if result.derived.price_per_qty else '—' }}</li>
+  </ul>
+  <a class="button" href="/">Back to Dashboard</a>
+</div>
+{% endblock %}
