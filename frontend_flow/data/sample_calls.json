@@ -1,0 +1,508 @@
+[
+  {
+    "metadata": {
+      "buyer_id": "B-001",
+      "seller_id": "S-001",
+      "category_id": "steel_rods",
+      "category_name": "Steel Rods",
+      "city": "Surat",
+      "state": "Gujarat",
+      "timestamp": "2025-11-30T05:26:09.549901",
+      "duration": 60
+    },
+    "transcript": "Hello, I need 500 kg of 12 mm steel rods for construction. What's your price? Seller: Rs 45000 per ton, we deliver in Delhi. Buyer: Good, send me the specs grade A. Deal confirmed.",
+    "extracted": {
+      "specs": [],
+      "prices": [
+        45000
+      ],
+      "quantities": [
+        500
+      ],
+      "sentiment": "positive"
+    },
+    "derived": {
+      "avg_price": 45000.0,
+      "total_qty": 500,
+      "price_per_qty": 90.0
+    }
+  },
+  {
+    "metadata": {
+      "buyer_id": "B-002",
+      "seller_id": "S-002",
+      "category_id": "steel_rods",
+      "category_name": "Steel Rods",
+      "city": "Delhi",
+      "state": "Delhi",
+      "timestamp": "2025-11-26T13:26:09.549901",
+      "duration": 208
+    },
+    "transcript": "Hi, looking for steel rods 16 mm. How much for 200 kg? Seller: INR 9500. Buyer: Price is a bit high. Can you do Rs 9000? Seller: Okay fine, 9000 per 200kg.",
+    "extracted": {
+      "specs": [],
+      "prices": [
+        9500,
+        9000
+      ],
+      "quantities": [
+        200,
+        200
+      ],
+      "sentiment": "positive"
+    },
+    "derived": {
+      "avg_price": 9250.0,
+      "total_qty": 400,
+      "price_per_qty": 23.125
+    }
+  },
+  {
+    "metadata": {
+      "buyer_id": "B-003",
+      "seller_id": "S-003",
+      "category_id": "steel_rods",
+      "category_name": "Steel Rods",
+      "city": "Delhi",
+      "state": "Delhi",
+      "timestamp": "2025-11-23T02:26:09.549901",
+      "duration": 247
+    },
+    "transcript": "Need TMT bars urgently, 10 mm size. 1000 kg quantity. Seller: Rs 48 per kg. Grade B available. Buyer: Yes ok, please confirm delivery to Mumbai by Thursday.",
+    "extracted": {
+      "specs": [],
+      "prices": [
+        48
+      ],
+      "quantities": [
+        1000
+      ],
+      "sentiment": "positive"
+    },
+    "derived": {
+      "avg_price": 48.0,
+      "total_qty": 1000,
+      "price_per_qty": 0.048
+    }
+  },
+  {
+    "metadata": {
+      "buyer_id": "B-004",
+      "seller_id": "S-004",
+      "category_id": "textiles",
+      "category_name": "Textiles",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "timestamp": "2025-11-18T03:26:09.549901",
+      "duration": 200
+    },
+    "transcript": "I want 500 meters of cotton fabric for garment manufacturing. Seller: Rs 120 per meter, good quality. Buyer: Send samples first. Seller: Yes sure, will courier today.",
+    "extracted": {
+      "specs": [],
+      "prices": [
+        120
+      ],
+      "quantities": [
+        500
+      ],
+      "sentiment": "positive"
+    },
+    "derived": {
+      "avg_price": 120.0,
+      "total_qty": 500,
+      "price_per_qty": 0.24
+    }
+  },
+  {
+    "metadata": {
+      "buyer_id": "B-005",
+      "seller_id": "S-005",
+      "category_id": "textiles",
+      "category_name": "Textiles",
+      "city": "Bengaluru",
+      "state": "Karnataka",
+      "timestamp": "2025-11-27T08:26:09.549901",
+      "duration": 161
+    },
+    "transcript": "Hello, do you have silk fabric? Need 200 meters. Seller: Yes, Rs 450 per meter. Premium quality. Buyer: Price okay, but need it in Bengaluru. Seller: We deliver, no problem.",
+    "extracted": {
+      "specs": [],
+      "prices": [
+        450
+      ],
+      "quantities": [
+        200
+      ],
+      "sentiment": "neutral"
+    },
+    "derived": {
+      "avg_price": 450.0,
+      "total_qty": 200,
+      "price_per_qty": 2.25
+    }
+  },
+  {
+    "metadata": {
+      "buyer_id": "B-006",
+      "seller_id": "S-006",
+      "category_id": "textiles",
+      "category_name": "Textiles",
+      "city": "Kolkata",
+      "state": "West Bengal",
+      "timestamp": "2025-12-06T21:26:09.549901",
+      "duration": 179
+    },
+    "transcript": "Looking for polyester blend 300 meters. Seller: INR 85 per meter. Buyer: Good deal, confirm the order.",
+    "extracted": {
+      "specs": [],
+      "prices": [
+        85
+      ],
+      "quantities": [
+        300
+      ],
+      "sentiment": "positive"
+    },
+    "derived": {
+      "avg_price": 85.0,
+      "total_qty": 300,
+      "price_per_qty": 0.2833333333333333
+    }
+  },
+  {
+    "metadata": {
+      "buyer_id": "B-007",
+      "seller_id": "S-007",
+      "category_id": "electronics_components",
+      "category_name": "Electronics Components",
+      "city": "Jaipur",
+      "state": "Rajasthan",
+      "timestamp": "2025-12-09T09:26:09.549901",
+      "duration": 156
+    },
+    "transcript": "Need 1000 units of resistors 10k ohm. What price? Seller: Rs 2 per piece. Buyer: Okay good, ship to Hyderabad. Seller: Done, will dispatch tomorrow.",
+    "extracted": {
+      "specs": [],
+      "prices": [
+        10
+      ],
+      "quantities": [
+        1000
+      ],
+      "sentiment": "positive"
+    },
+    "derived": {
+      "avg_price": 10.0,
+      "total_qty": 1000,
+      "price_per_qty": 0.01
+    }
+  },
+  {
+    "metadata": {
+      "buyer_id": "B-008",
+      "seller_id": "S-008",
+      "category_id": "electronics_components",
+      "category_name": "Electronics Components",
+      "city": "Kolkata",
+      "state": "West Bengal",
+      "timestamp": "2025-11-24T21:26:09.549901",
+      "duration": 73
+    },
+    "transcript": "Hi, I want microcontrollers ESP32. 200 units needed. Seller: INR 250 per unit. Buyer: Price is okay. Send invoice. Seller: Yes, confirmed.",
+    "extracted": {
+      "specs": [],
+      "prices": [
+        250
+      ],
+      "quantities": [
+        200
+      ],
+      "sentiment": "positive"
+    },
+    "derived": {
+      "avg_price": 250.0,
+      "total_qty": 200,
+      "price_per_qty": 1.25
+    }
+  },
+  {
+    "metadata": {
+      "buyer_id": "B-009",
+      "seller_id": "S-009",
+      "category_id": "electronics_components",
+      "category_name": "Electronics Components",
+      "city": "Hyderabad",
+      "state": "Telangana",
+      "timestamp": "2025-12-03T05:26:09.549901",
+      "duration": 81
+    },
+    "transcript": "Looking for capacitors 100uF. 500 pieces. Seller: Rs 5 per piece. Buyer: Deal fine, please pack properly for shipping.",
+    "extracted": {
+      "specs": [],
+      "prices": [
+        100
+      ],
+      "quantities": [
+        500
+      ],
+      "sentiment": "positive"
+    },
+    "derived": {
+      "avg_price": 100.0,
+      "total_qty": 500,
+      "price_per_qty": 0.2
+    }
+  },
+  {
+    "metadata": {
+      "buyer_id": "B-010",
+      "seller_id": "S-010",
+      "category_id": "agriculture_seeds",
+      "category_name": "Agriculture Seeds",
+      "city": "Chennai",
+      "state": "Tamil Nadu",
+      "timestamp": "2025-11-25T01:26:09.549901",
+      "duration": 262
+    },
+    "transcript": "I need wheat seeds for 50 acres. How much per kg? Seller: Rs 45 per kg, certified seeds. Buyer: Good variety? Seller: Yes grade A, high yield. Buyer: Okay send 200 kg to Jaipur.",
+    "extracted": {
+      "specs": [],
+      "prices": [
+        45
+      ],
+      "quantities": [
+        200
+      ],
+      "sentiment": "positive"
+    },
+    "derived": {
+      "avg_price": 45.0,
+      "total_qty": 200,
+      "price_per_qty": 0.225
+    }
+  },
+  {
+    "metadata": {
+      "buyer_id": "B-011",
+      "seller_id": "S-011",
+      "category_id": "agriculture_seeds",
+      "category_name": "Agriculture Seeds",
+      "city": "Delhi",
+      "state": "Delhi",
+      "timestamp": "2025-11-15T08:26:09.549901",
+      "duration": 163
+    },
+    "transcript": "Want rice seeds, 100 kg. Seller: INR 60 per kg. Buyer: Delivery to Pune? Seller: Yes we deliver. Buyer: Fine, confirm order.",
+    "extracted": {
+      "specs": [],
+      "prices": [
+        60
+      ],
+      "quantities": [
+        100
+      ],
+      "sentiment": "positive"
+    },
+    "derived": {
+      "avg_price": 60.0,
+      "total_qty": 100,
+      "price_per_qty": 0.6
+    }
+  },
+  {
+    "metadata": {
+      "buyer_id": "B-012",
+      "seller_id": "S-012",
+      "category_id": "agriculture_seeds",
+      "category_name": "Agriculture Seeds",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "timestamp": "2025-11-28T19:26:09.549901",
+      "duration": 85
+    },
+    "transcript": "Need corn seeds urgently. 150 kg. Seller: Rs 55 per kg. Buyer: Good, ship to Surat tomorrow.",
+    "extracted": {
+      "specs": [],
+      "prices": [
+        55
+      ],
+      "quantities": [
+        150
+      ],
+      "sentiment": "positive"
+    },
+    "derived": {
+      "avg_price": 55.0,
+      "total_qty": 150,
+      "price_per_qty": 0.36666666666666664
+    }
+  },
+  {
+    "metadata": {
+      "buyer_id": "B-013",
+      "seller_id": "S-013",
+      "category_id": "packaging_materials",
+      "category_name": "Packaging Materials",
+      "city": "Hyderabad",
+      "state": "Telangana",
+      "timestamp": "2025-11-18T20:26:09.549901",
+      "duration": 97
+    },
+    "transcript": "Hello, need corrugated boxes for packaging. 500 units, what size available? Seller: 12x10x8 inches, Rs 25 per box. Buyer: Good, confirm order for Chennai delivery.",
+    "extracted": {
+      "specs": [],
+      "prices": [
+        25
+      ],
+      "quantities": [
+        500
+      ],
+      "sentiment": "positive"
+    },
+    "derived": {
+      "avg_price": 25.0,
+      "total_qty": 500,
+      "price_per_qty": 0.05
+    }
+  },
+  {
+    "metadata": {
+      "buyer_id": "B-014",
+      "seller_id": "S-014",
+      "category_id": "packaging_materials",
+      "category_name": "Packaging Materials",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "timestamp": "2025-12-02T23:26:09.549901",
+      "duration": 70
+    },
+    "transcript": "I want plastic containers 1 liter size. 1000 pieces. Seller: INR 15 per piece. Buyer: Okay deal, send to Kolkata. Seller: Yes confirmed.",
+    "extracted": {
+      "specs": [],
+      "prices": [
+        15
+      ],
+      "quantities": [
+        1000
+      ],
+      "sentiment": "positive"
+    },
+    "derived": {
+      "avg_price": 15.0,
+      "total_qty": 1000,
+      "price_per_qty": 0.015
+    }
+  },
+  {
+    "metadata": {
+      "buyer_id": "B-015",
+      "seller_id": "S-015",
+      "category_id": "packaging_materials",
+      "category_name": "Packaging Materials",
+      "city": "Hyderabad",
+      "state": "Telangana",
+      "timestamp": "2025-11-14T01:26:09.549901",
+      "duration": 227
+    },
+    "transcript": "Need bubble wrap rolls. 200 meters. Seller: Rs 35 per meter. Buyer: Price okay, please dispatch today.",
+    "extracted": {
+      "specs": [],
+      "prices": [
+        35
+      ],
+      "quantities": [
+        200
+      ],
+      "sentiment": "positive"
+    },
+    "derived": {
+      "avg_price": 35.0,
+      "total_qty": 200,
+      "price_per_qty": 0.175
+    }
+  },
+  {
+    "metadata": {
+      "buyer_id": "B-016",
+      "seller_id": "S-016",
+      "category_id": "furniture",
+      "category_name": "Furniture",
+      "city": "Jaipur",
+      "state": "Rajasthan",
+      "timestamp": "2025-11-21T18:26:09.549901",
+      "duration": 83
+    },
+    "transcript": "Looking for office chairs. Need 50 units. Seller: Rs 3500 per chair, ergonomic design. Buyer: Good quality? Seller: Yes premium. Buyer: Okay confirm, deliver to Delhi office.",
+    "extracted": {
+      "specs": [],
+      "prices": [
+        3500
+      ],
+      "quantities": [
+        50
+      ],
+      "sentiment": "positive"
+    },
+    "derived": {
+      "avg_price": 3500.0,
+      "total_qty": 50,
+      "price_per_qty": 70.0
+    }
+  },
+  {
+    "metadata": {
+      "buyer_id": "B-017",
+      "seller_id": "S-017",
+      "category_id": "furniture",
+      "category_name": "Furniture",
+      "city": "Jaipur",
+      "state": "Rajasthan",
+      "timestamp": "2025-12-12T20:26:09.549901",
+      "duration": 117
+    },
+    "transcript": "Hi, want wooden desks. 20 pieces needed. Seller: INR 8500 per desk. Buyer: Price fine, send dimensions. Seller: Will share catalog.",
+    "extracted": {
+      "specs": [],
+      "prices": [
+        8500
+      ],
+      "quantities": [
+        20
+      ],
+      "sentiment": "positive"
+    },
+    "derived": {
+      "avg_price": 8500.0,
+      "total_qty": 20,
+      "price_per_qty": 425.0
+    }
+  },
+  {
+    "metadata": {
+      "buyer_id": "B-018",
+      "seller_id": "S-018",
+      "category_id": "furniture",
+      "category_name": "Furniture",
+      "city": "Kolkata",
+      "state": "West Bengal",
+      "timestamp": "2025-12-03T19:26:09.549901",
+      "duration": 149
+    },
+    "transcript": "Need conference table. 5 meter size. Seller: Rs 45000 for custom made. Buyer: Good, finalize the design and confirm.",
+    "extracted": {
+      "specs": [],
+      "prices": [
+        45000
+      ],
+      "quantities": [
+        5
+      ],
+      "sentiment": "positive"
+    },
+    "derived": {
+      "avg_price": 45000.0,
+      "total_qty": 5,
+      "price_per_qty": 9000.0
+    }
+  }
+]
