@@ -91,7 +91,8 @@
                         "type": "array",
                         "items": {
                             "type": "string"
-                        }
+                        },
+                        "description": "Must contain ONLY details explicitly mentioned in the transcript, no assumptions."
                     }
                 }
             }
@@ -125,6 +126,10 @@
         "short_summary": {
             "type": "string",
             "description": "Crisp, readable MOM for seller in bullet-like lines"
+        },
+        "seller_coaching_insight": {
+            "type": "string",
+            "description": "Call-specific improvement insight for the current seller, generated ONLY when the transcript shows clear, factual gaps (e.g., missed price, unclear response, lack of delivery or GST clarity). Must be based strictly on transcript facts. If no valid coaching point exists, return an empty string."
         }
     }
 }

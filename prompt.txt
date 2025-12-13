@@ -49,11 +49,36 @@ TASK RULES (Very Important):
    - Deals in product / Does not deal in product / Not clear
 
 7. Set no_buyer_requirement to true if call is cut abruptly without discussing requirements, or buyer mentions requirement is already fulfilled or no requirement.
+8. Set is_deal_followup to true if call is cut abruptly without discussing requirements, or buyer mentions requirement is already fulfilled or no requirement.
 
 8. short_summary:
    - crisp 3–6 bullet-like sentences, non-repetitive.
 
-9. If any data missing → use "" or null or {} as required.
-10. Do NOT infer anything not present in the transcript.
-11. The final output must contain ONLY the JSON object.
-12. Do NOT include the schema, descriptions, types, or any explanatory text.
+9. seller_coaching_insight
+   Generate this field ONLY if the transcript clearly shows the seller could have handled the call better.
+   Valid triggers (must be explicitly present in the transcript):
+   - Buyer asked for information (price, quotation, delivery date, GST, product details) that the seller did not provide
+   - Seller responded vaguely or only acknowledged without resolving the query
+   - Seller avoided or delayed giving a clear answer
+   - Seller showed hesitation or lack of preparedness
+
+  If none apply → return an empty string "".
+
+When generating:
+
+  - Analyze the conversation flow and seller responses
+  - State exactly what the seller missed or should improve
+  - Write 1–3 short, call-specific lines
+  - Use only transcript facts
+  - Avoid generic advice
+  - Do NOT invent or assume anything
+
+Output must be direct, practical, and seller-friendly.
+
+10.STRICT NON-HALLUCINATION RULE:
+  - Extract ONLY what is explicitly spoken in the transcript text.
+  - If a detail is not mentioned word-for-word in the transcript, DO NOT include it.
+  - Do NOT generate: prices, catalogs, product names, company details, quantities, quality types, stock info, shipping info, availability, or any numerical value unless explicitly spoken.
+  - additional_info must ONLY contain facts directly spoken in the transcript.
+  - If the transcript is short or lacks detail, do NOT infer context from similar calls or prior knowledge. Base output strictly on provided utterances.
+  - If something is unclear or missing → return "" or null (do NOT guess).
