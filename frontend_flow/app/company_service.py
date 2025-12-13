@@ -9,8 +9,8 @@ class CompanyService:
         # Using IP address instead of domain for better accessibility
         self.base_url_template_1 = "http://34.93.120.35/wservce/company/detail/glusrid/{user_id}/alias//cat_link//token/imobile@15061981/req_server/home_server/modid/tdw/is_mob_device/"
         self.base_url_template_2 = "http://34.93.120.35/wservce/company/detail/glusrid//alias/{alias}/cat_link//token/imobile@15061981/req_server/home_server/modid/tdw/is_mob_device/"
-        # Working GST API with free trial key
-        self.gst_api_key = "35763275830677245b5785e216f6afdf"
+        # Working GST API with updated key
+        self.gst_api_key = "d315ec2fa9590c48e436cad6520f5110"
         self.gst_api_url = f"https://sheet.gstincheck.co.in/check/{self.gst_api_key}/{{gst_number}}"
 
     def get_showroom_alias(self, user_id: str) -> Optional[str]:

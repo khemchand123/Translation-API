@@ -184,7 +184,8 @@ def upload():
                     gst_validation = None
                     if not is_bulk_processing:  # Only validate for single upload page
                         if response_data and isinstance(response_data, list) and len(response_data) > 0:
-                            output = response_data[0].get('output', {})
+                            # Handle both old structure (with 'output') and new structure (direct data)
+                            output = response_data[0].get('output', response_data[0])
                             seller_id = output.get('seller_identifier') or seller_buyer_meta_data.get('seller_identifier')
                             
                             if seller_id:

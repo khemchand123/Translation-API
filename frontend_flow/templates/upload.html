@@ -194,8 +194,8 @@
         console.log('✅ RECEIVED RESPONSE FROM BACKEND:');
         console.log(JSON.stringify(result, null, 2));
         
-        // Extract insights from webhook response
-        const insights = result.webhook_response?.[0]?.output || {};
+        // Extract insights from webhook response (handle both old and new structure)
+        const insights = result.webhook_response?.[0]?.output || result.webhook_response?.[0] || {};
         
         // Show success
         messageDiv.innerHTML = '<div class="success-message">✅ Call processed successfully!</div>';
@@ -249,7 +249,7 @@
             <div style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); padding: 20px; border-radius: 12px; margin-bottom: 15px;">
               <h4 style="margin: 0 0 15px 0; color: white; font-size: 16px;">🎯 ISQ Enrichment Opportunities</h4>
               ${isqUpdates}
-              <p style="margin: 10px 0 0 0; color: #ddd6fe; font-size: 13px;">💡 Action: Update product catalog and buylead templates with these specifications</p>
+              <p style="margin: 10px 0 0 0; color: #ddd6fe; font-size: 13px;"> BL Enrichment via extracted buyer stated ISQs </p>
             </div>`;
         }
         
@@ -290,8 +290,8 @@
             borderColor = '#f87171';
             iconColor = '#fecaca';
             statusIcon = '❌';
-            statusText = '❌ Seller NOT Verified for Discussed Products';
-            actionText = '💡 Action: ❌ WARNING: Seller not registered for mentioned products, high fraud risk';
+            statusText = ' Seller NOT Verified for Discussed Products';
+            actionText = '💡 Action: WARNING: Seller not registered for mentioned products, high fraud risk';
             recommendations.push('⚠ ALERT: Seller GST unverified - products not in government registration');
           }
           
@@ -451,13 +451,56 @@
             </div>
           ` : ''}
           
-          <!-- AI SUGGESTIONS -->
-          ${insights.ai_suggestion && insights.ai_suggestion.length > 0 ? `
+          <!-- SELLER CALL SUMMARY (NEW STRUCTURE) -->
+          ${insights.seller_call_summary ? `
+            <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(99, 102, 241, 0.25);">
+              <h3 style="color: #a5b4fc; margin: 0 0 15px 0; font-size: 16px;">📊 Detailed Call Analysis</h3>
+              
+              ${insights.seller_call_summary.conversion_outlook ? `
+                <div style="background: rgba(34, 197, 94, 0.15); padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 3px solid #22c55e;">
+                  <h4 style="color: #86efac; margin: 0 0 8px 0; font-size: 14px;">🎯 Conversion Outlook</h4>
+                  <p style="color: #d1fae5; font-size: 13px; margin: 0; line-height: 1.6;">${insights.seller_call_summary.conversion_outlook}</p>
+                </div>
+              ` : ''}
+              
+              ${insights.seller_call_summary.key_points && insights.seller_call_summary.key_points.length > 0 ? `
+                <div style="background: rgba(99, 102, 241, 0.1); padding: 15px; border-radius: 8px;">
+                  <h4 style="color: #c7d2fe; margin: 0 0 12px 0; font-size: 14px;">🔑 Key Points</h4>
+                  ${insights.seller_call_summary.key_points.map(point => `
+                    <div style="color: #e0e7ff; font-size: 13px; line-height: 1.7; margin-bottom: 8px; padding-left: 15px; border-left: 2px solid #818cf8;">• ${point}</div>
+                  `).join('')}
+                </div>
+              ` : ''}
+            </div>
+          ` : ''}
+          
+          <!-- AI SUGGESTED NUDGES (NEW STRUCTURE) -->
+          ${insights.ai_suggested_nudges && insights.ai_suggested_nudges.length > 0 ? `
+            <div style="background: linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(219, 39, 119, 0.15) 100%); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(236, 72, 153, 0.3);">
+              <h3 style="color: #f9a8d4; margin: 0 0 15px 0; font-size: 16px;">💡 AI-Suggested Nudges</h3>
+              <div style="display: grid; gap: 12px;">
+                ${insights.ai_suggested_nudges.map(nudge => `
+                  <div style="background: rgba(0, 0, 0, 0.2); padding: 15px; border-radius: 8px; border-left: 3px solid #ec4899;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                      <span style="background: #ec4899; color: white; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase;">${nudge.nudge_type}</span>
+                    </div>
+                    <p style="color: #fecdd3; font-size: 14px; margin: 0; line-height: 1.6;">${nudge.nudge_text}</p>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+          
+          <!-- AI SUGGESTIONS (OLD STRUCTURE - FALLBACK) -->
+          ${insights.ai_suggestion && !insights.ai_suggested_nudges ? `
             <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(99, 102, 241, 0.3);">
               <h3 style="color: #a5b4fc; margin: 0 0 15px 0; font-size: 16px;">🤖 AI Suggestions</h3>
-              ${insights.ai_suggestion.map(suggestion => `
-                <div style="color: #c7d2fe; font-size: 14px; line-height: 1.6; margin-bottom: 10px; padding-left: 15px; border-left: 3px solid #6366f1;">• ${suggestion}</div>
-              `).join('')}
+              ${typeof insights.ai_suggestion === 'string' ? 
+                `<div style="color: #c7d2fe; font-size: 14px; line-height: 1.8; white-space: pre-line;">${insights.ai_suggestion}</div>` : 
+                insights.ai_suggestion.map(suggestion => `
+                  <div style="color: #c7d2fe; font-size: 14px; line-height: 1.6; margin-bottom: 10px; padding-left: 15px; border-left: 3px solid #6366f1;">• ${suggestion}</div>
+                `).join('')
+              }
             </div>
           ` : ''}
           
