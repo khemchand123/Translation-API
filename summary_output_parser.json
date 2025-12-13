@@ -1,0 +1,18 @@
+{
+    "seller_identifier": "integer",
+    "buyer_identifier": "integer",
+    "mcat_name": "string",
+    "mcat_id": "integer",
+    "main_product": "<string>",
+    "location": "<city>, <state>",
+    "call_summary": [
+        "sentence",
+        "sentence",
+        "sentence"
+    ],
+    "ai_suggestion": [
+        "sentence",
+        "sentence",
+        "sentence"
+    ]
+}
