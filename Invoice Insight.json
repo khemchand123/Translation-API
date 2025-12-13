@@ -1,0 +1,351 @@
+{
+  "name": "Invoice Insight",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "anthropic/claude-sonnet-4.5",
+          "mode": "list",
+          "cachedResultName": "anthropic/claude-sonnet-4.5"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        208
+      ],
+      "id": "3464ebcf-eaa0-46c2-a4c7-c4e6a9607175",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "lFj0rQrqkbsGBySM",
+          "name": "IM Voice Hackathon - llm gateway"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={\n  \"seller_buyer_meta_data\": {{ JSON.stringify($json.seller_buyer_meta_data) }},\n  \"speakers\": {{ JSON.stringify($json.speakers) }}\n}\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an AI assistant that extracts structured insights from IndiaMART buyer-seller call transcripts.\n\nInput format:\n{\n  \"speakers\": [ {\"speaker_id\": \"<string>\", \"text\": \"<string>\"} ],\n  \"seller_buyer_meta_data\": {\n    \"seller_identifier\": \"<integer>\",\n    \"buyer_identifier\": \"<integer>\",\n    \"city\": \"<string>\",\n    \"state\": \"<string>\",\n    \"mcat_name\": \"<string>\",\n    \"mcat_id\": \"<integer>\",\n    \"main_product\": \"<string>\"\n  }\n}\n\nTASK RULES (Very Important):\n1. Copy these fields EXACTLY from input metadata:\n   - seller_identifier\n   - buyer_identifier\n   - mcat_name\n   - mcat_id\n   - main_product\n   - location = \"<city>, <state>\"\n\n2. Create a “products” array:\n   - First item = always main_product.\n   - Additional discussed products → separate objects.\n\n3. For each product extract:\n   - ISQ: key-value spec pairs (if none, use empty object {})\n   - buyer_budget: numeric price + unit only. If none, null.\n   - seller_quotation: numeric price + unit only. If none, null.\n   - additional_info: delivery time, warranty, MOQ, quality, stock, certifications, samples, shipping, etc.\n\n4. Buyer Intent:\n   - High: clear need + timeline + price agreement + intention to proceed\n   - Medium: need present but unclear details / some hesitation\n   - Low: casual enquiry, only price check\n   - Not Sure: cannot determine\n\n5. Urgency:\n   - High: today / tomorrow / 1–2 days\n   - Medium: within a week\n   - Low: no timeline or long-term\n   - Not Sure: unclear\n\n6. Seller Interest:\n   - Deals in product / Does not deal in product / Not clear\n\nSeller Location Interest:\n- Deals in Location / Does not deal in Location/ Not Clear\n\n7. Set no_buyer_requirement to true if call is cut abruptly without discussing requirements, or buyer mentions requirement is already fulfilled or no requirement.\n\n8. short_summary:\n   - crisp 3–6 bullet-like sentences, non-repetitive.\n\n9. seller_coaching_insight\n   Generate this field ONLY if the transcript clearly shows the seller could have handled the call better.\n   Valid triggers (must be explicitly present in the transcript):\n   - Buyer asked for information (price, quotation, delivery date, GST, product details) that the seller did not provide\n   - Seller responded vaguely or only acknowledged without resolving the query\n   - Seller avoided or delayed giving a clear answer\n   - Seller showed hesitation or lack of preparedness\n\n  If none apply → return an empty string \"\".\n\nWhen generating:\n\n  - Analyze the conversation flow and seller responses\n  - State exactly what the seller missed or should improve\n  - Write 1–3 short, call-specific lines\n  - Use only transcript facts\n  - Avoid generic advice\n  - Do NOT invent or assume anything\n\nOutput must be direct, practical, and seller-friendly.\n\n10.STRICT NON-HALLUCINATION RULE:\n  - Extract ONLY what is explicitly spoken in the transcript text.\n  - If a detail is not mentioned word-for-word in the transcript, DO NOT include it.\n  - Do NOT generate: prices, catalogs, product names, company details, quantities, quality types, stock info, shipping info, availability, or any numerical value unless explicitly spoken.\n  - additional_info must ONLY contain facts directly spoken in the transcript.\n  - If the transcript is short or lacks detail, do NOT infer context from similar calls or prior knowledge. Base output strictly on provided utterances.\n  - If something is unclear or missing → return \"\" or null (do NOT guess).\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        336,
+        0
+      ],
+      "id": "21c7a095-f95a-4258-a8fa-d1f74f70e35c",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"seller_identifier\": {\n            \"type\": [\n                \"integer\",\n                \"string\"\n            ]\n        },\n        \"buyer_identifier\": {\n            \"type\": [\n                \"integer\",\n                \"string\"\n            ]\n        },\n        \"mcat_name\": {\n            \"type\": \"string\"\n        },\n        \"mcat_id\": {\n            \"type\": [\n                \"integer\",\n                \"string\"\n            ]\n        },\n        \"main_product\": {\n            \"type\": \"string\",\n            \"description\": \"Primary product from metadata input\"\n        },\n        \"location\": {\n            \"type\": \"string\"\n        },\n        \"no_buyer_requirement\": {\n            \"type\": \"boolean\"\n        },\n        \"products\": {\n            \"type\": \"array\",\n            \"description\": \"First object = main product. Followed by other discussed products.\",\n            \"items\": {\n                \"type\": \"object\",\n                \"properties\": {\n                    \"product_name\": {\n                        \"type\": \"string\"\n                    },\n                    \"isq\": {\n                        \"type\": \"object\",\n                        \"additionalProperties\": {\n                            \"type\": \"string\"\n                        }\n                    },\n                    \"buyer_budget\": {\n                        \"type\": [\n                            \"object\",\n                            \"null\"\n                        ],\n                        \"properties\": {\n                            \"price_per_unit\": {\n                                \"type\": [\n                                    \"number\",\n                                    \"null\"\n                                ]\n                            },\n                            \"unit\": {\n                                \"type\": [\n                                    \"string\",\n                                    \"null\"\n                                ]\n                            }\n                        }\n                    },\n                    \"seller_quotation\": {\n                        \"type\": [\n                            \"object\",\n                            \"null\"\n                        ],\n                        \"properties\": {\n                            \"price_per_unit\": {\n                                \"type\": [\n                                    \"number\",\n                                    \"null\"\n                                ]\n                            },\n                            \"unit\": {\n                                \"type\": [\n                                    \"string\",\n                                    \"null\"\n                                ]\n                            }\n                        }\n                    },\n                    \"additional_info\": {\n                        \"type\": \"array\",\n                        \"items\": {\n                            \"type\": \"string\"\n                        },\n                        \"description\": \"Must contain ONLY details explicitly mentioned in the transcript, no assumptions.\"\n                    }\n                }\n            }\n        },\n        \"buyer_intent\": {\n            \"type\": \"string\",\n            \"enum\": [\n                \"High\",\n                \"Medium\",\n                \"Low\",\n                \"Not Sure\"\n            ]\n        },\n        \"urgency\": {\n            \"type\": \"string\",\n            \"enum\": [\n                \"High\",\n                \"Medium\",\n                \"Low\",\n                \"Not Sure\"\n            ]\n        },\n        \"seller_interest\": {\n            \"type\": \"string\",\n            \"enum\": [\n                \"Deals in product\",\n                \"Does not deal in product\",\n                \"Not clear\"\n            ]\n        },\n      \"seller_location_flag\": {\n        \"type\": \"string\",\n        \"enum\": [\n          \"Deals in Location\",\n          \"Does not Deal in Location\",\n          \"Not Clear\"\n        ]\n      },\n        \"short_summary\": {\n            \"type\": \"string\",\n            \"description\": \"Crisp, readable MOM for seller in bullet-like lines\"\n        },\n        \"seller_coaching_insight\": {\n            \"type\": \"string\",\n            \"description\": \"Call-specific improvement insight for the current seller, generated ONLY when the transcript shows clear, factual gaps (e.g., missed price, unclear response, lack of delivery or GST clarity). Must be based strictly on transcript facts. If no valid coaching point exists, return an empty string.\"\n        }\n    }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        576,
+        208
+      ],
+      "id": "1499775c-014a-4191-9d4a-a0791187fadd",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "buyer-seller-insight",
+        "responseMode": "lastNode",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -496,
+        224
+      ],
+      "id": "394deaed-2dbf-46c1-8af5-d512306843d5",
+      "name": "Webhook",
+      "webhookId": "f8aae555-66ad-4f49-88b3-dae653b824fb"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://niko-unsuppressive-rustily.ngrok-free.dev/translate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        32,
+        0
+      ],
+      "id": "3729d53a-982a-4f6c-a3b1-47481a5a49a7",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "anthropic/claude-sonnet-4.5",
+          "mode": "list",
+          "cachedResultName": "anthropic/claude-sonnet-4.5"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        176,
+        688
+      ],
+      "id": "826c1205-a8df-4024-8b1b-28239128a7b5",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "lFj0rQrqkbsGBySM",
+          "name": "IM Voice Hackathon - llm gateway"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={\n  \"seller_buyer_meta_data\": {{ JSON.stringify($json.seller_buyer_meta_data) }},\n  \"speakers\": {{ JSON.stringify($json.speakers) }}\n}\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Improved Prompt: IndiaMART Call Insight Extraction\n\nYou are an AI assistant that extracts structured business insights from IndiaMART buyer–seller call transcripts.\n\nInput Format:\n{\n  \"speakers\": [\n    { \"speaker_id\": \"<string>\", \"text\": \"<string>\" }\n  ],\n  \"seller_buyer_meta_data\": {\n    \"seller_identifier\": \"<integer>\",\n    \"buyer_identifier\": \"<integer>\",\n    \"city\": \"<string>\",\n    \"state\": \"<string>\",\n    \"mcat_name\": \"<string>\",\n    \"mcat_id\": \"<integer>\",\n    \"main_product\": \"<string>\"\n  }\n}\n\nOutput Requirements:\n\n1. Mandatory Metadata (Copy Exactly)\n   Copy the following fields verbatim from seller_buyer_meta_data:\n   - seller_identifier\n   - buyer_identifier\n   - mcat_name\n   - mcat_id\n   - main_product\n\n   Construct:\n   - location = \"<city>, <state>\"\n\n   Do not infer, modify, or rephrase metadata values.\n\n2. call_summary\n   Generate a concise summary of the buyer–seller conversation.\n\n   Rules:\n   - 3–6 short, crisp sentences (bullet-style, but plain text)\n   - Non-repetitive\n   - Focus on:\n     - buyer intent\n     - seller response\n     - product discussed\n     - pricing, availability, or next steps (only if mentioned)\n   - Do not add assumptions or external knowledge\n\n3. ai_suggestion\n   Generate actionable AI suggestions for the seller only, based strictly on the conversation.\n\n   Rules:\n   - 3–6 short, crisp sentences (bullet-style, but plain text)\n   - Non-repetitive\n   - Focus on:\n     - improving clarity\n     - understanding buyer needs better\n     - follow-ups, objections handling, or upsell opportunities\n   - Suggestions must be grounded in the transcript\n   - Do not invent buyer intent or missing details\n\nStrict Constraints:\n- Use only the provided transcript and metadata\n- No hallucinations or assumptions\n- No extra fields in output\n- No explanations or commentary"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        320,
+        464
+      ],
+      "id": "12fcaf04-3ece-40a4-b595-e15a320b3093",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"seller_identifier\": \"integer\",\n  \"buyer_identifier\": \"integer\",\n  \"mcat_name\": \"string\",\n  \"mcat_id\": \"integer\",\n  \"main_product\": \"<string>\",\n  \"location\": \"<city>, <state>\",\n  \"call_summary\": [\n    \"sentence\",\n    \"sentence\",\n    \"sentence\"\n  ],\n  \"ai_suggestion\": [\n    \"sentence\",\n    \"sentence\",\n    \"sentence\"\n  ]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        576,
+        688
+      ],
+      "id": "b997af77-662d-49fe-bb03-caf0e65fd250",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.summary }}",
+                    "rightValue": "=",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "false",
+                      "singleValue": true
+                    },
+                    "id": "58efea3d-2794-47b2-aec7-22204e85498e"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "NotSummary"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d5c465dc-42b6-4506-ba98-5224d0b94dd2",
+                    "leftValue": "={{ $json.body.summary }}",
+                    "rightValue": "false",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Summary"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -192,
+        224
+      ],
+      "id": "a60e18c4-9977-4b29-b2e0-3264baaa4c41",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://niko-unsuppressive-rustily.ngrok-free.dev/translate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        32,
+        464
+      ],
+      "id": "83e0ce70-2c03-46f7-80db-ba18152e45d9",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "16de55a7-38f1-486c-b6ff-e21fb09a9568",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "17519d3ef9735db55aeaaca554134cc04945a8942840756f95f4251d52adf708"
+  },
+  "id": "NoLodj5gTwJT8rPk",
+  "tags": []
+}

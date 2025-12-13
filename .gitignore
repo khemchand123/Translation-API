@@ -19,7 +19,6 @@ venv.bak/
 
 # Output files
 output/
-*.json
 *.mp3
 *.wav
 

@@ -1,0 +1,87 @@
+1. Get insight price of a product 
+
+https://imworkflow.intermesh.net/webhook/buyer-seller-insight
+{
+	"audio_url":"https://storage.googleapis.com/im-model-product/pns/e6cfac340062588533cbdc8d2a1b4debe9f98510d615c3e26d60fcc33dae1e04.mp3?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=mayank-docker%40model-product.iam.gserviceaccount.com%2F20251212%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20251212T091332Z&X-Goog-Expires=604800&X-Goog-SignedHeaders=host&X-Goog-Signature=0da02ca6cbc1e2a05a14f010e836104f40d4b31c94b0729ea622ca380386c67dc565a51a82af8b0ff35f691abc00bf565d9c507f6cdad3dd79c8fa671be5c1b3d10facc2f9451e8cfc980eca0dc78c721f41b519cd191ab319b87206e13db0be8e46fe229f55cf7781c630ff6f6456ea8579f966124f6fc6bdda508b399709e2a5825aa36448018186c84d4d0ce59ec039d0e1e7d36a940b76b75ce8f9279b8eeb3af64ff978d94332bbec05bb1de7878c13abcbe15e1cb4458817babe1fc3514a97759fe259459aeef3d3419714aa0fc4813bc15d8f12a8d6155abb1673f1781f8a5bb9360e326e81e2432e8a8ba2cc7f9e945791bd87f03f6dc701df8b5196",
+	"seller_buyer_meta_data": {
+    "seller_identifier":"5901",
+    "buyer_identifier":"8801",
+    "city":"Chennai",
+    "state":"Tamil Nadu",
+    "mcat_name":"Commercial Kitchen Equipment",
+    "mcat_id":"5570",
+    "main_product":"Product Name"
+	}
+}
+
+
+2. Price and ISQ 
+{
+	"audio_url":"https://storage.googleapis.com/im-model-product/pns/b771d96965034c3a4ec0f7a515f4db7e9b0c7b1058f58297df77e14950bb4280.mp3?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=mayank-docker%40model-product.iam.gserviceaccount.com%2F20251212%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20251212T091331Z&X-Goog-Expires=604800&X-Goog-SignedHeaders=host&X-Goog-Signature=198a76adac639372ec641ea58027371bee87704762dcc4061044cc30154858a67dd004bc271b98cb1e2477e674de64e8ed10771d00fdcc1304851e7a90481e8c6507d4485ea14478ad02186712e9314d24d73179863a21645990bac8f6f265f1a6b46f6f59178a07ac1c60921d2508539bf3aff32f94936662a229f91d507a57c84c6629ae05b0393e91782d7965d18b9ecbf9292f8673356af7b1e5ab4c50e73fe34e315c8cfabd56974789d4836d9e8081b3a829b9e39ed20d5a80e8fa883826cd5eb5363136bff9baf78e6dfc817d8a5661ea8915c7e8fd5e16412a13c2a90012e0fec9e8c61b23e705cea92a5df8fb626ab3f9a508c965a212161bcd1f9a",
+	"seller_buyer_meta_data": {
+    "seller_identifier":"5901",
+    "buyer_identifier":"8801",
+    "city":"Chennai",
+    "state":"Tamil Nadu",
+    "mcat_name":"Commercial Kitchen Equipment",
+    "mcat_id":"5570",
+    "main_product":"Product Name"
+	}
+}
+
+3. More ISQ:-
+{
+	"audio_url":"https://storage.googleapis.com/im-model-product/pns/d6de7ad50704ebc2d4e27464bbbc04c9ca057951ffd8ea1452226f6a404d3176.mp3?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=mayank-docker%40model-product.iam.gserviceaccount.com%2F20251212%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20251212T091332Z&X-Goog-Expires=604800&X-Goog-SignedHeaders=host&X-Goog-Signature=1cab8cf4579a25d3b26d898e70d08cb0ef460470e899fba325e320ff04de13ed7aa9b3476672cc97723772b8d90018551ac133ed59cbe935bac5b40d2c5c2a26a887c2b358fb8b2dd0cc910152c026575c2150bec4b4b004a94c6c996a8ca3350deffad0bb1fdde64108ac350f4e1f2a85b844399a18090d36f754cb89aff6f6a8ac62030187b19930f29afa54f33fa601e2d128cd9a83fe458c965e9780bf724b7e84873c9fd39c62618a3adc6794bfb8be2d062c8386c0fdba07b75f6cd1baadcdb45c3375611eccbd61b2dc4eee7a33f6a392bd605a881b9a148b2f789c7e82f4f5031e32342400321d002dc47aa7f6484ef202c3e769307329cbdb97d1bc",
+	"seller_buyer_meta_data": {
+    "seller_identifier":"5901",
+    "buyer_identifier":"8801",
+    "city":"Chennai",
+    "state":"Tamil Nadu",
+    "mcat_name":"Commercial Kitchen Equipment",
+    "mcat_id":"5570",
+    "main_product":"Product Name"
+	}
+}
+
+4.  Price and ISQ - no HALLUCINATION
+{
+	"audio_url":"https://storage.googleapis.com/im-model-product/pns/c170560f5cae78354b0d305706920cb0b063f5f426d30455083f21f03f6d8c1f.mp3?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=mayank-docker%40model-product.iam.gserviceaccount.com%2F20251212%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20251212T091458Z&X-Goog-Expires=604800&X-Goog-SignedHeaders=host&X-Goog-Signature=4d38bea7f9970f730f5c61406f4ce170d81e6955d0c2cdff1564b492af65f455e10623b5d473fc836ca3c6f2dd93c1b1728e48b98a3d1a08ca4fcd15b3b3f2dda14502f4a2f82f62e6c44cbdf1a4d28bafcba6b1a9322d83c8eb9bb0070af6e884fa21909d0da681bcca8f9798c5d8dabb245a09a956cf839424504e5b5c4d01e2b7d57cc1ed8ab098b85aa28199cdfe6f801f06b1e1df0f042fd911ff60fbaf932dd2fe14f864703102272b07640a3c2c8920335d52b4c04fdd6d91dc4afc6a081a968650890d7dbce7f98679b5f2c644dc485f1c00770417df42f5c2a93a8c96e4104afdd38f9b98acc108d5c7926d6260893d4719e9953f23f9d740f228de",
+	"seller_buyer_meta_data": {
+    "seller_identifier":"5901",
+    "buyer_identifier":"8801",
+    "city":"Chennai",
+    "state":"Tamil Nadu",
+    "mcat_name":"Pichwai Painting",
+    "mcat_id":"5570",
+    "main_product":"Product Name"
+	}
+}
+
+
+5. Telgu Lang - get seller - seller_coaching_insight
+{
+	"audio_url":"https://storage.googleapis.com/im-model-product/pns/0c8c34c007c0665ef88b8fa341f5fd81af4f4c4a0be6542d01704628eeaf9d23.mp3?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=mayank-docker%40model-product.iam.gserviceaccount.com%2F20251212%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20251212T093055Z&X-Goog-Expires=604800&X-Goog-SignedHeaders=host&X-Goog-Signature=7585f6da6931c63d00eee0a7a0a134f397a23a49a98f5cb3b5e53d053c1c17ae5f86cb5d194efaef5d6d58ad72f3e433f3a76ae593f38bcff1a3e968834761b15ee80263420e151cdda6b4bf32ce9fef4d9db214b5f91335f626eff05f1f5d439fb2053f4333dc563972e7ee5940b64c79e69c879cb50d6b44edf51052deaf56be5fdf0400489fef28dbe7a4ef521cb4d7a9b7387358c0acb16e72f9236f17ff8373c034142ad8733c8982978c796b343a2d0778163b7dc9ad280955fb32ccea49e8f0176d94bd89903d8c59026eba29b2c2528f325fff1488a053cb9c7134c18ed4b505997a5ec86960fab40972c42003b396229e1e3bcb16c0dd58a65bf1b2",
+	"seller_buyer_meta_data": {
+    "seller_identifier":"38644710",
+    "buyer_identifier":"69172177",
+    "city":"Chennai",
+    "state":"Tamil Nadu",
+    "mcat_name":"Bougainvillea Plant",
+    "mcat_id":"5570",
+    "main_product":"Product Name"
+	}
+}
+
+6. Multi Language support - Marathi (6) & Telgu (5)
+{
+	"audio_url":"https://storage.googleapis.com/im-model-product/pns/c13ef10ae0775aec291b5a55b6335e1965a6d373035e73ca2f2d10191fc9c85e.mp3?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=mayank-docker%40model-product.iam.gserviceaccount.com%2F20251212%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20251212T091331Z&X-Goog-Expires=604800&X-Goog-SignedHeaders=host&X-Goog-Signature=5bb80e07f21c93521d2ae22a9d35e35abc813c40af52c92bc1bed90f3ccca93c78a2f95feeae13dfa416ceb2cbfff470c70febb6792d41ad7bf265128af80219601e2bd3638dfefd625a435bd330cf5ba8199ef11d33c6b9786a9fb000ac428a62940f6be5ca51fbef18f87631452d2ede1a2cc86d70ee0956cdb7eca989b78c2630bd6ee6e6cf6bddc23b11118c8d6b9d1353729ff5072b8caea4b686c94cb84148f9e2c5983454a1b1acc60fb68651782fb22f7b4faa42b9d8df65f3378d685fe16f1eafd26a9d19c1d0c3a17cfcc433961bad03b2f8156e43302697ff3a251eb08e78557131656a8349786b854f61e3f6e51d1a5b614634367c0a6e19000b",
+	"seller_buyer_meta_data": {
+    "seller_identifier":"38644710",
+    "buyer_identifier":"69172177",
+    "city":"Pune",
+    "state":"Maharashtra",
+    "mcat_name":"Tissue Paper Dispenser",
+    "mcat_id":"5570",
+    "main_product":"Product Name"
+	}
+}

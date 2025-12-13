@@ -1,0 +1,135 @@
+{
+    "type": "object",
+    "properties": {
+        "seller_identifier": {
+            "type": [
+                "integer",
+                "string"
+            ]
+        },
+        "buyer_identifier": {
+            "type": [
+                "integer",
+                "string"
+            ]
+        },
+        "mcat_name": {
+            "type": "string"
+        },
+        "mcat_id": {
+            "type": [
+                "integer",
+                "string"
+            ]
+        },
+        "main_product": {
+            "type": "string",
+            "description": "Primary product from metadata input"
+        },
+        "location": {
+            "type": "string"
+        },
+        "no_buyer_requirement": {
+            "type": "boolean"
+        },
+        "products": {
+            "type": "array",
+            "description": "First object = main product. Followed by other discussed products.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "product_name": {
+                        "type": "string"
+                    },
+                    "isq": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    },
+                    "buyer_budget": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "price_per_unit": {
+                                "type": [
+                                    "number",
+                                    "null"
+                                ]
+                            },
+                            "unit": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        }
+                    },
+                    "seller_quotation": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "price_per_unit": {
+                                "type": [
+                                    "number",
+                                    "null"
+                                ]
+                            },
+                            "unit": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        }
+                    },
+                    "additional_info": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Must contain ONLY details explicitly mentioned in the transcript, no assumptions."
+                    }
+                }
+            }
+        },
+        "buyer_intent": {
+            "type": "string",
+            "enum": [
+                "High",
+                "Medium",
+                "Low",
+                "Not Sure"
+            ]
+        },
+        "urgency": {
+            "type": "string",
+            "enum": [
+                "High",
+                "Medium",
+                "Low",
+                "Not Sure"
+            ]
+        },
+        "seller_interest": {
+            "type": "string",
+            "enum": [
+                "Deals in product",
+                "Does not deal in product",
+                "Not clear"
+            ]
+        },
+        "short_summary": {
+            "type": "string",
+            "description": "Crisp, readable MOM for seller in bullet-like lines"
+        },
+        "seller_coaching_insight": {
+            "type": "string",
+            "description": "Call-specific improvement insight for the current seller, generated ONLY when the transcript shows clear, factual gaps (e.g., missed price, unclear response, lack of delivery or GST clarity). Must be based strictly on transcript facts. If no valid coaching point exists, return an empty string."
+        }
+    }
+}
